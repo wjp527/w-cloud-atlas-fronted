@@ -72,6 +72,12 @@ watch(
     open.value = newVal
   },
 )
+watch(
+  () => props.modalData,
+  (newVal) => {
+    modalData.value = newVal
+  },
+)
 
 const handleOk = (e: MouseEvent) => {
   open.value = false

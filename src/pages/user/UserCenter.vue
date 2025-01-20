@@ -1,6 +1,5 @@
 <template>
   <div class="UserCenter">
-    <pre>{{ formState }}</pre>
     <a-form
       :model="formState"
       name="basic"

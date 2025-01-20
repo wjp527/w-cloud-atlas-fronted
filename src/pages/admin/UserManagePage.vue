@@ -20,8 +20,8 @@
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit"> 搜索 </a-button>
-        <a-button @click="handleReset"> 重置 </a-button>
-        <a-button @click="handleAdd"> 新增 </a-button>
+        <a-button @click="handleReset" class="ml-4"> 重置 </a-button>
+        <a-button @click="handleAdd" class="ml-4"> 新增 </a-button>
       </a-form-item>
     </a-form>
 
@@ -84,7 +84,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
 import { useManageStore } from '@/store/manage'
 import { storeToRefs } from 'pinia'
 import { message } from 'ant-design-vue'
@@ -145,6 +145,7 @@ const searchParams = ref({
 
 const { manageUserList, manageUserListTotal } = storeToRefs(manageStore)
 
+// 初始化
 const init = async () => {
   const res = await manageStore.getManageUserList(searchParams.value)
   if (res === 200) {
@@ -183,11 +184,15 @@ const isModalOpen = ref(false) // 控制弹出框的状态
 const modalData = ref({}) // 弹出框的数据
 
 // 展示弹窗
-const showModal = (record: any) => {
-  modalData.value = record
-  console.log(record, 'record')
-  isModalOpen.value = true // 显示弹出框
+const showModal = async (record: API.LoginUserVO) => {
+  modalData.value = {}
+  if (record.id) {
+    modalData.value = JSON.parse(JSON.stringify(record))
+    await nextTick() // 等待 Vue 完成 DOM 更新
+    isModalOpen.value = true // 显示弹出框
+  }
 }
+
 // 新增表单
 const handleAdd = () => {
   modalData.value = {}
@@ -195,15 +200,14 @@ const handleAdd = () => {
 }
 // 提交表单
 const submitForm = async (data: any) => {
-  console.log(data, 'data')
   if (!data.id) {
     const res = await userAddUsingPost(data)
-  if (res.code == 0) {
-    message.success('新增成功')
-    init()
-  } else {
-    message.error('新增失败')
-  }
+    if (res.code == 0) {
+      message.success('新增成功')
+      init()
+    } else {
+      message.error('新增失败')
+    }
   } else {
     const res = await updateUserUsingPost(data)
     if (res.code == 0) {

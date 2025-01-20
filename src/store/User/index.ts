@@ -15,7 +15,6 @@ export const useUserStore = defineStore("userStore",
     // 获取登录用户信息
     const fetchLoginUser = async () => {
       const res = await getLoginUserUsingGet()
-      console.log(res.data);
       if (res.code === 0) {
         loginUser.value = res.data
       } else {
