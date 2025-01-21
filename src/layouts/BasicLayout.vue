@@ -29,7 +29,6 @@ import GlobalHeader from '@/components/GlobalHeader/GlobalHeader.vue'
     padding: 16px;
     background: linear-gradient(to right, #efefef, #ffffff);
     margin-bottom: 20px;
-
   }
 
   .footer {
