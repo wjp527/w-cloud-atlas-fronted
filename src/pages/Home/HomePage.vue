@@ -28,30 +28,16 @@
       </a-checkable-tag>
     </div>
 
-    <a-list
-      :grid="{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 5, xxl: 6 }"
-      :data-source="dataList"
-      :pagination="pagination"
-      :loading="loading"
-    >
-      <template #renderItem="{ item: picture }">
-        <a-list-item class="p-0" style="padding: 0">
-          <a-card hoverable @click="doDetail(picture.id)">
-            <template #cover>
-              <img alt="example" :src="picture.url" style="height: 240px; object-fit: cover" />
-            </template>
-            <a-card-meta :title="picture.name">
-              <template #description>
-                <a-flex>
-                  <a-tag color="blue">{{ picture.category ?? '默认' }}</a-tag>
-                  <a-tag v-for="tag in picture.tags" :key="tag">{{ tag }}</a-tag>
-                </a-flex>
-              </template>
-            </a-card-meta>
-          </a-card>
-        </a-list-item>
-      </template>
-    </a-list>
+    <WaterfallFlow :data="dataList" />
+
+    <div class="m-[100px] h-40" style="text-align: right">
+      <a-pagination
+        v-model:current="pagination.current"
+        :total="pagination.total"
+        show-less-items
+        @change="handleChange"
+      />
+    </div>
   </div>
 </template>
 <script lang="ts" setup name="HomePage">
@@ -59,8 +45,7 @@ import { computed, onMounted, ref } from 'vue'
 import { listPictureVoByPageUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { pictureTagCategoryUsingGet } from '@/api/pictureController'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+
 const dataList = ref<API.PictureVO[]>([])
 const loading = ref(true)
 // 搜索参数
@@ -150,16 +135,15 @@ const initOptions = async () => {
 
 // 分页
 const handleChange = (page: number, pageSize: number) => {
+  pageSize = 12
   searchParams.value.current = page
   searchParams.value.pageSize = pageSize
   init()
 }
 
-// 查看详情
-const doDetail = (id: string) => {
-  router.push(`/picture/detail/${id}`)
-}
 onMounted(() => {
+  searchParams.value.current = 1
+
   init()
   initOptions()
 })

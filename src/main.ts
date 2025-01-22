@@ -12,8 +12,10 @@ import '@/access.ts'
 
 // 引入全局组件
 import manageMode from '@/components/Manage/manageMode.vue'
+// 图片上传组件
 import PictureUpload from '@/components/Picture/PictureUpload.vue'
-
+// 瀑布流组件
+import WaterfallFlow from './components/Test/WaterfallFlow.vue';
 const app = createApp(App)
 
 // 注册全局组件
@@ -21,6 +23,8 @@ const app = createApp(App)
 app.component('manageMode', manageMode)
 // 图片上传组件
 app.component('PictureUpload', PictureUpload)
+// 瀑布流组件
+app.component('WaterfallFlow', WaterfallFlow)
 
 app.use(store)
 app.use(router)

@@ -44,11 +44,7 @@ const router = createRouter({
       props: true,
       component: () => import('../pages/picture/PictureDetailPage.vue'),
     },
-    {
-      path: '/pic',
-      name: 'pic',
-      component: () => import('../pages/test/pic.vue')
-    }
+
   ],
 })
 

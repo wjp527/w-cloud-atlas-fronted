@@ -76,7 +76,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
 
 /deep/.ant-upload img {
   max-width: 100% !important;
-  max-height: 480px !important;
+  max-height: 230px !important;
 }
 .PictureUpload {
   .avatar-uploader > .ant-upload {
