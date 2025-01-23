@@ -14,6 +14,8 @@ import '@/access.ts'
 import manageMode from '@/components/Manage/manageMode.vue'
 // 图片上传组件
 import PictureUpload from '@/components/Picture/PictureUpload.vue'
+// 在线url导入图片组件
+import UrlPictureUpload from '@/components/Picture/UrlPictureUpload.vue'
 // 瀑布流组件
 import WaterfallFlow from './components/Test/WaterfallFlow.vue';
 const app = createApp(App)
@@ -23,6 +25,8 @@ const app = createApp(App)
 app.component('manageMode', manageMode)
 // 图片上传组件
 app.component('PictureUpload', PictureUpload)
+// 在线url导入图片组件
+app.component('UrlPictureUpload', UrlPictureUpload)
 // 瀑布流组件
 app.component('WaterfallFlow', WaterfallFlow)
 

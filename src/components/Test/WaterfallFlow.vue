@@ -40,32 +40,54 @@ const findShortestColumn = () => {
   return columnHeights.value.indexOf(Math.min(...columnHeights.value))
 }
 
-// 动态分配图片
+// 动态分配图片(保证与之前的顺序是一致的)
 const distributeItems = () => {
   initColumnHeights()
-
   columnData.value = Array.from({ length: columnsCount.value }, () => [])
-  items.value.forEach((item) => {
+
+  // 存储加载完成的图片项及其原始索引
+  const loadedItems = [];
+
+  items.value.forEach((item, index) => {
     // 添加 loaded 状态，默认 false
-    item.loaded = false
-    const img = new Image()
-    img.src = item.url
+    item.loaded = false;
+    item.originalIndex = index; // 记录原始索引
+    const img = new Image();
+    img.src = item.url;
     img.onload = () => {
-      const columnIndex = findShortestColumn()
-      columnData.value[columnIndex].push(item)
-      columnHeights.value[columnIndex] += img.height * (200 / img.width) // 按比例计算图片高度
-      // 设置图片加载完成状态
-      // setTimeout(() => {
-      item.loaded = true
-      // }, 1000) // 设置延迟以确保图片已经加载完成，避免闪烁问题
-    }
+      item.imgHeight = img.height * (200 / img.width); // 按比例计算图片高度
+      loadedItems.push(item);
+      item.loaded = true;
+
+      // 当所有图片加载完成后，进行排序并分配到列中
+      if (loadedItems.length === items.value.length) {
+        loadedItems.sort((a, b) => a.originalIndex - b.originalIndex);
+        loadedItems.forEach((loadedItem) => {
+          const columnIndex = findShortestColumn();
+          columnData.value[columnIndex].push(loadedItem);
+          columnHeights.value[columnIndex] += loadedItem.imgHeight;
+        });
+      }
+    };
     img.onerror = () => {
-      console.error(`Image failed to load: ${item.url}`)
+      console.error(`Image failed to load: ${item.url}`);
       // 加载失败也可以设置 loaded 为 true 或提供备用图片逻辑
-      item.loaded = true
-    }
-  })
-}
+      item.loaded = true;
+      item.imgHeight = 0; // 假设加载失败高度为 0
+      loadedItems.push(item);
+
+      // 当所有图片加载完成后，进行排序并分配到列中
+      if (loadedItems.length === items.value.length) {
+        loadedItems.sort((a, b) => a.originalIndex - b.originalIndex);
+        loadedItems.forEach((loadedItem) => {
+          const columnIndex = findShortestColumn();
+          columnData.value[columnIndex].push(loadedItem);
+          columnHeights.value[columnIndex] += loadedItem.imgHeight;
+        });
+      }
+    };
+  });
+};
 
 // 动态更新列数
 const updateColumnsCount = debounce(() => {
@@ -96,6 +118,7 @@ const doDetail = (id: string) => {
 
 <template>
   <div id="waterfallContainer" class="waterfall-container">
+    <!-- <pre>{{ columnData }}</pre> -->
     <div v-for="(column, columnIndex) in columnData" :key="columnIndex" class="waterfall-column">
       <div v-for="item in column" :key="item.url" class="waterfall-box">
         <a-card hoverable class="waterfall-box-img" @click="doDetail(item.id)">
@@ -130,6 +153,7 @@ const doDetail = (id: string) => {
 .waterfall-container {
   display: flex;
   gap: 16px;
+  overflow: hidden;
 }
 
 .waterfall-column {
@@ -137,6 +161,7 @@ const doDetail = (id: string) => {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow: hidden;
 }
 
 .waterfall-box-img {

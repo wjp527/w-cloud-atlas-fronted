@@ -1,5 +1,13 @@
 <template>
   <div id="PictureManagePage">
+    <a-flex justify="space-between">
+      <h2 class="text-[24px]">图片管理</h2>
+      <a-space>
+        <a-button type="primary" href="/picture/addPicture" target="_blank">创建图片</a-button>
+        <a-button type="primary" ghost href="/picture/addPicture/batch" target="_blank">批量导入图片</a-button>
+      </a-space>
+    </a-flex>
+    <div class="mb-4"></div>
     <!-- 搜索 -->
     <a-form
       layout="inline"
@@ -51,7 +59,6 @@
       <a-form-item>
         <a-button type="primary" html-type="submit"> 搜索 </a-button>
         <a-button @click="handleReset" class="ml-4"> 重置 </a-button>
-        <a-button @click="handleAdd" class="ml-4"> 新增 </a-button>
       </a-form-item>
     </a-form>
 
@@ -157,8 +164,6 @@
       </template>
     </a-table>
 
-    <manageMode v-model:open="isModalOpen" :modalData="modalData" @submitForm="submitForm" />
-
     <!-- 拒绝弹窗 -->
     <a-modal v-model:open="rejectModal" title="图片的拒绝理由" @ok="handleReject">
       <a-textarea
@@ -244,11 +249,11 @@ const columns = [
 // 搜索参数
 const searchParams = ref({
   current: 1,
-  pageSize: 20,
+  pageSize: 200,
   // 排序字段
   sortField: 'createTime',
-  // 排序顺序
-  sortOrder: 'ascend',
+  // 排序顺序 ascend
+  sortOrder: 'descend',
   // 搜索文本
   searchText: '',
   // 图片名
@@ -296,35 +301,6 @@ const handleReset = () => {
   init()
 }
 
-// 新增/修改
-const isModalOpen = ref(false) // 控制弹出框的状态
-const modalData = ref({}) // 弹出框的数据
-
-// 新增表单
-const handleAdd = () => {
-  modalData.value = {}
-  isModalOpen.value = true // 显示弹出框
-}
-// 提交表单
-const submitForm = async (data: any) => {
-  if (!data.id) {
-    const res = await listPictureByPageUsingPost(data)
-    if (res.code == 0) {
-      message.success('新增成功')
-      init()
-    } else {
-      message.error('新增失败')
-    }
-  } else {
-    const res = await updatePictureUsingPost(data)
-    if (res.code == 0) {
-      message.success('修改成功')
-      init()
-    } else {
-      message.error('修改失败')
-    }
-  }
-}
 // 删除数据
 const deletePictureInfo = async (record: any) => {
   const res = await deletePictureUsingPost({

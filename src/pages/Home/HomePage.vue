@@ -55,7 +55,10 @@ const searchParams = ref({
   // 排序字段
   sortField: 'createTime',
   // 排序顺序
-  sortOrder: 'ascend',
+  // 升序
+  // sortOrder: 'ascend',
+  // 降序
+  sortOrder: 'descend',
   // 搜索文本
   searchText: '',
   // 分类
@@ -88,6 +91,7 @@ const init = async () => {
   const res = await listPictureVoByPageUsingPost(params)
 
   dataList.value = res.data?.records || []
+  console.log(dataList.value,'dataList');
   total.value = res.data?.total || 0
   loading.value = false
 }

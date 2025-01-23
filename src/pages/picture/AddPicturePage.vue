@@ -1,9 +1,20 @@
 <template>
   <div class="AddPicturePage">
-    <div class="text-2xl font-bold mb-10">
+    <div class="text-2xl font-bold mb-4">
       {{ pictureForm.id ? '修改图片' : '新增图片' }}
     </div>
-    <PictureUpload :picture="picture" @success="onSuccess" />
+
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType">
+      <a-tab-pane key="file" tab="图片上传">
+        <!-- 本地文件上传 -->
+        <PictureUpload :picture="picture" @success="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL上传" force-render>
+        <!-- Url图片上传 -->
+        <UrlPictureUpload :picture="picture" @success="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
 
     <a-form
       v-if="picture"
@@ -60,6 +71,8 @@ import { message } from 'ant-design-vue'
 
 const router = useRouter()
 const route = useRoute()
+const uploadType = ref<'file' | 'url'>('file')
+
 // 上传的图片
 const picture = ref<API.PictureVO>()
 // 表单数据

@@ -25,3 +25,33 @@ export const PIC_REVIEW_STATUS_OPTIONS = Object.keys(PIC_REVIEW_STATUS_MAP).map(
     value: key,
   }
 })
+
+
+// -------------------------------------------------------------------------------------------------
+
+// 批量导入
+/**
+ * 图片来源枚举
+ */
+export const PIC_BATCH_ENUM = {
+  BAIDU: "baidu",
+  BING: "bing",
+}
+
+/**
+ * 图片来源文案
+ */
+export const PIC_BATCH_MAP = {
+  "baidu": '百度',
+  "bing": "必应"
+}
+
+/**
+ * 图片来源下拉表达选项
+ */
+export const PIC_BATCH_OPTIONS = Object.keys(PIC_BATCH_MAP).map((key) => {
+  return {
+    label: PIC_BATCH_MAP[key],
+    value: key,
+  }
+})

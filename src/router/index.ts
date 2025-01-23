@@ -44,6 +44,12 @@ const router = createRouter({
       props: true,
       component: () => import('../pages/picture/PictureDetailPage.vue'),
     },
+    {
+      path: '/picture/addPicture/batch',
+      name: '批量导入图片',
+      props: true,
+      component: () => import('../pages/picture/AddPictureBatchPage.vue'),
+    },
 
   ],
 })
