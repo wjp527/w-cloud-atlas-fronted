@@ -9,7 +9,12 @@
       class="mb-10"
     >
       <a-form-item name="searchText" label="关键词">
-        <a-input v-model:value="searchParams.searchText" placeholder="从名称和简介搜索" allow-clear>
+        <a-input
+          v-model:value="searchParams.searchText"
+          placeholder="从名称和简介搜索"
+          allow-clear
+          class="mb-4"
+        >
           <template #prefix><PictureOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
         </a-input>
       </a-form-item>
@@ -22,14 +27,27 @@
           style="width: 100%"
           placeholder="请输入图片标签"
           allow-clear
+          class="mb-4"
         ></a-select>
       </a-form-item>
 
       <a-form-item name="name" label="图片名">
-        <a-input v-model:value="searchParams.name" placeholder="图片名" allow-clear>
+        <a-input v-model:value="searchParams.name" class="mb-4" placeholder="图片名" allow-clear>
           <template #prefix><PictureOutlined style="color: rgba(0, 0, 0, 0.25)" /></template>
         </a-input>
       </a-form-item>
+
+      <a-form-item name="tags" label="审核状态">
+        <a-select
+          v-model:value="searchParams.reviewStatus"
+          :options="PIC_REVIEW_STATUS_OPTIONS"
+          style="min-width: 180px"
+          placeholder="请输入图片标签"
+          allow-clear
+          class="mb-4"
+        ></a-select>
+      </a-form-item>
+
       <a-form-item>
         <a-button type="primary" html-type="submit"> 搜索 </a-button>
         <a-button @click="handleReset" class="ml-4"> 重置 </a-button>
@@ -78,6 +96,16 @@
           <div>宽高比：{{ record.picScale }}</div>
           <div>大小：{{ (record.picSize / 1024).toFixed(2) }}KB</div>
         </template>
+
+        <!-- 审核信息 -->
+        <template v-if="column.dataIndex === 'reviewMessage'">
+          <div>审核状态：{{ PIC_REVIEW_STATUS_MAP[record.reviewStatus] }}</div>
+          <div>审核信息: {{ record.reviewMessage }}</div>
+          <div>审核人: {{ record.reviewerId }}</div>
+          <div v-if="record.reviewTime">
+            审核时间: {{ dayjs(record.reviewTime).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
+        </template>
         <template v-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
@@ -87,11 +115,30 @@
         </template>
 
         <template v-else-if="column.key === 'action'">
-          <a-space>
+          <a-space wrap>
+            <a-button
+              type="link"
+              size="small"
+              class="mr-1"
+              v-if="record.reviewStatus != PIC_REVIEW_STATUS_ENUM.PASS"
+              @click="handleReview(record, PIC_REVIEW_STATUS_ENUM.PASS)"
+              >通过</a-button
+            >
+            <a-popconfirm
+              title="是否要拒绝这条图片数据?"
+              ok-text="是"
+              cancel-text="否"
+              v-if="record.reviewStatus != PIC_REVIEW_STATUS_ENUM.REJECT"
+              @confirm="showModal(record, PIC_REVIEW_STATUS_ENUM.REJECT)"
+              @cancel="cancelDeletePictureInfo"
+            >
+              <a-button type="link" danger size="small">拒绝</a-button>
+            </a-popconfirm>
+
             <a-button
               type="primary"
               size="small"
-              class="mr-4"
+              class="mr-1"
               :href="`/picture/addPicture?id=${record.id}`"
               target="_blank"
               >编辑</a-button
@@ -111,6 +158,14 @@
     </a-table>
 
     <manageMode v-model:open="isModalOpen" :modalData="modalData" @submitForm="submitForm" />
+
+    <!-- 拒绝弹窗 -->
+    <a-modal v-model:open="rejectModal" title="图片的拒绝理由" @ok="handleReject">
+      <a-textarea
+        v-model:value="reviewMessage"
+        placeholder="请输入拒绝理由"
+        :auto-size="{ minRows: 2, maxRows: 5 }"
+    /></a-modal>
   </div>
 </template>
 <script lang="ts" setup>
@@ -123,8 +178,14 @@ import {
   listPictureByPageUsingPost,
   updatePictureUsingPost,
   pictureTagCategoryUsingGet,
+  doPictureReviewUsingPost,
 } from '@/api/pictureController'
 import { PictureOutlined } from '@ant-design/icons-vue'
+import {
+  PIC_REVIEW_STATUS_ENUM,
+  PIC_REVIEW_STATUS_MAP,
+  PIC_REVIEW_STATUS_OPTIONS,
+} from '@/constants/picture'
 
 const columns = [
   {
@@ -163,6 +224,10 @@ const columns = [
     width: 80,
   },
   {
+    title: '审核信息',
+    dataIndex: 'reviewMessage',
+  },
+  {
     title: '创建时间',
     dataIndex: 'createTime',
   },
@@ -188,6 +253,8 @@ const searchParams = ref({
   searchText: '',
   // 图片名
   name: '',
+  // 审核状态
+  reviewStatus: '',
 })
 
 const managePictureList = ref([])
@@ -299,6 +366,50 @@ const initOptions = async () => {
     }
   } catch (error) {
     message.error('获取分类和标签失败: ', error)
+  }
+}
+
+// 审核图片(通过)
+const reviewMessage = ref<string>('管理员操作通过')
+
+const handleReview = async (record: API.Picture, reviewStatus: number) => {
+  const res = await doPictureReviewUsingPost({
+    id: record.id,
+    reviewStatus: reviewStatus,
+    reviewMessage: reviewMessage.value,
+  })
+  if (res.code === 0) {
+    message.success(reviewMessage)
+    init()
+  } else {
+    message.error(`审核失败：${res.message}`)
+  }
+}
+
+// 拒绝弹窗
+const rejectModal = ref<boolean>(false)
+const payloadData = ref()
+const payloadStatus = ref<number>(PIC_REVIEW_STATUS_ENUM.PASS)
+const showModal = (record: API.Picture, reviewStatus: number) => {
+  rejectModal.value = true
+  reviewMessage.value = ''
+  payloadData.value = record
+  payloadStatus.value = reviewStatus
+}
+
+// 审核图片(拒绝)
+const handleReject = async () => {
+  const res = await doPictureReviewUsingPost({
+    id: payloadData.value.id,
+    reviewStatus: payloadStatus.value,
+    reviewMessage: reviewMessage.value,
+  })
+  if (res.code === 0) {
+    message.success(res.message)
+    rejectModal.value = false
+    init()
+  } else {
+    message.error(`审核失败：${res.message}`)
   }
 }
 
