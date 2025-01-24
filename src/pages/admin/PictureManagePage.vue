@@ -4,7 +4,9 @@
       <h2 class="text-[24px]">图片管理</h2>
       <a-space>
         <a-button type="primary" href="/picture/addPicture" target="_blank">创建图片</a-button>
-        <a-button type="primary" ghost href="/picture/addPicture/batch" target="_blank">批量导入图片</a-button>
+        <a-button type="primary" ghost href="/picture/addPicture/batch" target="_blank"
+          >批量导入图片</a-button
+        >
       </a-space>
     </a-flex>
     <div class="mb-4"></div>
@@ -267,6 +269,7 @@ const managePictureListTotal = ref(0)
 
 // 初始化
 const init = async () => {
+  loading.value = true
   const res = await listPictureByPageUsingPost(searchParams.value)
   if (res.code === 0) {
     managePictureList.value = res.data.records

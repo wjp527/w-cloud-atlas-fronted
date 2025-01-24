@@ -42,9 +42,9 @@
             <a-descriptions-item label="高度">
               {{ picture.picHeight }}
             </a-descriptions-item>
-            <a-descrption-item label="宽高比">
+            <a-descriptions-item label="宽高比">
               {{ picture.picScale }}
-            </a-descrption-item>
+            </a-descriptions-item>
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize ?? 0) }}
             </a-descriptions-item>

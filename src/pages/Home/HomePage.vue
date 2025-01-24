@@ -22,7 +22,7 @@
         v-for="(tag, index) in tagList"
         :key="tag"
         v-model:checked="selectedTagList[index]"
-        @change="init()"
+        @change="doSearch"
       >
         {{ tag }}
       </a-checkable-tag>
@@ -33,8 +33,10 @@
     <div class="m-[100px] h-40" style="text-align: right">
       <a-pagination
         v-model:current="pagination.current"
+        v-model:pageSize="pagination.pageSize"
         :total="pagination.total"
         show-less-items
+        :pageSizeOptions="[]"
         @change="handleChange"
       />
     </div>
@@ -48,6 +50,7 @@ import { pictureTagCategoryUsingGet } from '@/api/pictureController'
 
 const dataList = ref<API.PictureVO[]>([])
 const loading = ref(true)
+const test = ref()
 // 搜索参数
 const searchParams = ref({
   current: 1,
@@ -91,7 +94,7 @@ const init = async () => {
   const res = await listPictureVoByPageUsingPost(params)
 
   dataList.value = res.data?.records || []
-  console.log(dataList.value,'dataList');
+  console.log(dataList.value, 'dataList')
   total.value = res.data?.total || 0
   loading.value = false
 }
@@ -112,7 +115,9 @@ const doSearch = async () => {
   // searchParams.value.category = selectedCategory.value
   // searchParams.value.tagList = selectedTagList.value
 
-  init()
+  setTimeout(() => {
+    init()
+  }, 100)
 }
 
 // 分类选项
@@ -147,7 +152,6 @@ const handleChange = (page: number, pageSize: number) => {
 
 onMounted(() => {
   searchParams.value.current = 1
-
   init()
   initOptions()
 })
