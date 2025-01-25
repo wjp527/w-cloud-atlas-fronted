@@ -7,6 +7,15 @@
         <a-button type="primary" ghost href="/picture/addPicture/batch" target="_blank"
           >批量导入图片</a-button
         >
+
+        <a-popconfirm
+          title="是否要进行批量删除?"
+          ok-text="是"
+          cancel-text="否"
+          @confirm="batchDelete"
+        >
+          <a-button type="primary" danger>批量删除</a-button>
+        </a-popconfirm>
       </a-space>
     </a-flex>
     <div class="mb-4"></div>
@@ -65,9 +74,11 @@
     </a-form>
 
     <a-table
+      rowKey="id"
       :loading="loading"
       :columns="columns"
       :data-source="managePictureList"
+      :row-selection="rowSelection"
       :pagination="{
         total: managePictureListTotal,
         current: searchParams.current,
@@ -183,7 +194,6 @@ import type { FormProps } from 'ant-design-vue'
 import {
   deletePictureUsingPost,
   listPictureByPageUsingPost,
-  updatePictureUsingPost,
   pictureTagCategoryUsingGet,
   doPictureReviewUsingPost,
 } from '@/api/pictureController'
@@ -389,6 +399,39 @@ const handleReject = async () => {
     init()
   } else {
     message.error(`审核失败：${res.message}`)
+  }
+}
+
+import type { TableProps } from 'ant-design-vue'
+const arr = ref([])
+const rowSelection: TableProps['rowSelection'] = {
+  onChange: (selectedRowKeys: string[], selectedRows: API.Picture[]) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
+    arr.value = selectedRows
+  },
+  getCheckboxProps: (record) => ({
+    disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    name: record.name,
+  }),
+}
+
+// 批量删除
+const batchIds = ref([])
+const batchDelete = async () => {
+  arr.value.forEach((item) => batchIds.value.push(item.id))
+  console.log(batchIds.value)
+  try {
+    const res = await deletePictureUsingPost({
+      ids: batchIds.value,
+    })
+    if (res.code === 0) {
+      message.success('删除成功')
+      init()
+    } else {
+      message.error('删除失败：', res.message)
+    }
+  } catch (error) {
+    message.error('删除失败(error)：', error.message)
   }
 }
 

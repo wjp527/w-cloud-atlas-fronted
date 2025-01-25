@@ -3,11 +3,13 @@
     <a-row :gutter="[16, 16]">
       <!-- 图片预览 -->
       <a-col :sm="24" :md="16" :xl="18">
-        <a-card title="图片预览">
+        <a-card title="图片预览" class="flex justify-center flex-col">
           <!--
             object-fit: contain: 保持图片的宽高比，将图像缩放至完全适应容器的大小。
           -->
-          <a-image :src="picture.url" style="max-height: 600px; object-fit: contain" />
+          <div class="flex justify-center flex-col">
+            <a-image :src="picture.url" style="max-height: 600px; object-fit: contain" />
+          </div>
         </a-card>
       </a-col>
 

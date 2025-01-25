@@ -44,13 +44,16 @@
 </template>
 <script lang="ts" setup name="HomePage">
 import { computed, onMounted, ref } from 'vue'
-import { listPictureVoByPageUsingPost } from '@/api/pictureController'
+import {
+  listPictureVoByPageUsingPost,
+  listPictureVoByPageWithCacheManagerUsingPost,
+} from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { pictureTagCategoryUsingGet } from '@/api/pictureController'
 
 const dataList = ref<API.PictureVO[]>([])
 const loading = ref(true)
-const test = ref()
+
 // 搜索参数
 const searchParams = ref({
   current: 1,
@@ -91,7 +94,8 @@ const init = async () => {
     }
   })
 
-  const res = await listPictureVoByPageUsingPost(params)
+  // const res = await listPictureVoByPageUsingPost(params)
+  const res = await listPictureVoByPageWithCacheManagerUsingPost(params)
 
   dataList.value = res.data?.records || []
   console.log(dataList.value, 'dataList')
