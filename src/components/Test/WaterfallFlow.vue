@@ -5,12 +5,24 @@ import { useRouter } from 'vue-router'
 import { BreedingRhombusSpinner } from 'epic-spinners'
 // 防抖
 import { debounce } from 'lodash'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { deletePictureUsingPost } from '@/api/pictureController'
+import { message } from 'ant-design-vue'
 
 const router = useRouter()
 interface Props {
   data: any
+  showOp?: boolean
+  onReload?: () => void
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  // 图片数据数组，默认为空数组
+  data: () => [],
+  // 是否显示操作按钮，默认为 false
+  showOp: false,
+  // 数据更新，页面重新加载
+  // onReload: () => void
+})
 const items = ref()
 const columnsCount = ref(4) // 列数
 const columnHeights = ref([]) // 每列的高度
@@ -91,6 +103,35 @@ const distributeItems = () => {
   })
 }
 
+// 修改
+const doEdit = (item, e: any) => {
+  // 组织冒泡
+  e.stopPropagation()
+
+  // 跳转时，一定要携带 spaceId，确保跳转到正确的空间下
+
+  router.push({
+    path: '/picture/addPicture',
+    query: {
+      id: item.id,
+      spaceId: item.spaceId,
+    },
+  })
+}
+
+const doDelete = async (item, e) => {
+  e.stopPropagation()
+}
+
+const doDeleteConfirm = async (item) => {
+  const res = await deletePictureUsingPost({ id: item.id })
+  if (res.code == 0) {
+    props.onReload?.()
+    message.success('删除成功')
+  } else {
+    message.error('删除失败: ' + res.message)
+  }
+}
 // 动态更新列数
 const updateColumnsCount = debounce(() => {
   const containerWidth = window.innerWidth
@@ -120,7 +161,6 @@ const doDetail = (id: string) => {
 
 <template>
   <div id="waterfallContainer" class="waterfall-container">
-    <!-- <pre>{{ columnData }}</pre> -->
     <div v-for="(column, columnIndex) in columnData" :key="columnIndex" class="waterfall-column">
       <div v-for="item in column" :key="item.id" class="waterfall-box">
         <a-card hoverable class="waterfall-box-img" @click="doDetail(item.id)">
@@ -145,6 +185,24 @@ const doDetail = (id: string) => {
               </a-flex>
             </template>
           </a-card-meta>
+
+          <template #actions v-if="showOp">
+            <a-space @click="(e) => doEdit(item, e)">
+              <edit-outlined />
+              修改
+            </a-space>
+            <a-space @click="(e) => doDelete(item, e)">
+              <a-popconfirm
+                title="是否要删除该图片?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="doDeleteConfirm(item)"
+              >
+                <delete-outlined />
+                删除
+              </a-popconfirm>
+            </a-space>
+          </template>
         </a-card>
       </div>
     </div>
@@ -156,6 +214,7 @@ const doDetail = (id: string) => {
   display: flex;
   gap: 16px;
   overflow: hidden;
+  margin-bottom: 100px;
 }
 
 .waterfall-column {

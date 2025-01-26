@@ -59,10 +59,8 @@
               </template>
               免费下载
             </a-button>
-            <a-button v-if="isOwner" :icon="h(EditOutlined)" :href="`/picture/addPicture?id=${id}`"
-              >编辑</a-button
-            >
-
+            <a-button v-if="isOwner" :icon="h(EditOutlined)" @click="doEdit">编辑</a-button>
+            {{ isOwner }}==
             <a-popconfirm
               title="是否要删除该图片?"
               ok-text="是"
@@ -111,10 +109,13 @@ const isOwner = computed(() => {
     return false
   }
 
-  // 非管理员和图片作者不能编辑和删除
-  if (loginUser.userRole != 'admin' || loginUser.id != picture.value.userId) {
-    return false
+  if (picture.value.userId != undefined) {
+    // 非管理员和图片作者不能编辑和删除
+    if (loginUser.userRole != 'admin' && loginUser.id != picture.value.userId) {
+      return false
+    }
   }
+
   return true
 })
 
@@ -132,6 +133,16 @@ const fetchPictureDetail = async () => {
   }
 }
 
+// 修改图片
+const doEdit = async () => {
+  router.push({
+    path: '/picture/addPicture',
+    query: {
+      id: picture.value.id,
+      spaceId: picture.value.spaceId,
+    },
+  })
+}
 // 删除图片
 const deletePicture = async () => {
   try {

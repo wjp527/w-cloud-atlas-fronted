@@ -50,6 +50,27 @@ const router = createRouter({
       props: true,
       component: () => import('../pages/picture/AddPictureBatchPage.vue'),
     },
+    {
+      path: '/admin/spaceManage',
+      name: '空间管理',
+      component: () => import('../pages/admin/SpaceManagePage.vue'),
+    },
+    {
+      path: '/space/addSpace',
+      name: '添加空间',
+      component: () => import('../pages/space/AddSpacePage.vue'),
+    },
+    {
+      path: '/my_space',
+      name: '我的空间',
+      component: () => import('../pages/space/MySpacePage.vue'),
+    },
+    {
+      path: '/space/detail/:id',
+      name: '空间详情',
+      props: true,
+      component: () => import('../pages/space/SpaceDetailPage.vue'),
+    },
 
   ],
 })

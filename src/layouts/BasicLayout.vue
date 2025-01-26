@@ -4,9 +4,14 @@
       <a-layout-header class="header">
         <GlobalHeader />
       </a-layout-header>
-      <a-layout-content class="content">
-        <router-view />
-      </a-layout-content>
+
+      <a-layout>
+        <GlobalSider />
+        <a-layout-content class="content">
+          <router-view />
+        </a-layout-content>
+      </a-layout>
+
       <a-layout-footer class="footer">
         <a href="https://github.com/wjp527" target="_blank"> wjp </a>
       </a-layout-footer>
@@ -15,6 +20,7 @@
 </template>
 <script lang="ts" setup name="BasicLayout">
 import GlobalHeader from '@/components/GlobalHeader/GlobalHeader.vue'
+import GlobalSider from '@/components/GlobalSider/GlobalSider.vue'
 </script>
 
 <style lang="less" scoped>
@@ -23,12 +29,15 @@ import GlobalHeader from '@/components/GlobalHeader/GlobalHeader.vue'
     padding-inline: 20px;
     background-color: #fff;
     color: unset;
-    margin-bottom: 16px;
+    margin-bottom: 6px;
   }
   .content {
-    padding: 16px;
-    background: linear-gradient(to right, #efefef, #ffffff);
-    margin-bottom: 20px;
+    padding: 28px;
+    // background: linear-gradient(to right, #efefef, #ffffff);
+    // background-color: pink;
+    background-color: #fff;
+
+    // height: calc(100% - 120px);
   }
 
   .footer {

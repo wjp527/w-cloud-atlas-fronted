@@ -4,15 +4,20 @@
       {{ pictureForm.id ? '修改图片' : '新增图片' }}
     </div>
 
+    <a-typography-paragraph v-if="spaceId" type="secondary">
+      保存至空间:
+      <a :href="`/space/detail/${spaceId}`">{{ spaceId }}</a>
+    </a-typography-paragraph>
+
     <!-- 选择上传方式 -->
     <a-tabs v-model:activeKey="uploadType">
       <a-tab-pane key="file" tab="图片上传">
         <!-- 本地文件上传 -->
-        <PictureUpload :picture="picture" @success="onSuccess" />
+        <PictureUpload :picture="picture" :spaceId="spaceId" @success="onSuccess" />
       </a-tab-pane>
       <a-tab-pane key="url" tab="URL上传" force-render>
         <!-- Url图片上传 -->
-        <UrlPictureUpload :picture="picture" @success="onSuccess" />
+        <UrlPictureUpload :picture="picture" :spaceId="spaceId" @success="onSuccess" />
       </a-tab-pane>
     </a-tabs>
 
@@ -59,7 +64,7 @@
   </div>
 </template>
 <script lang="ts" setup name="AddPicturePage">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { FormProps } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -72,6 +77,10 @@ import { message } from 'ant-design-vue'
 const router = useRouter()
 const route = useRoute()
 const uploadType = ref<'file' | 'url'>('file')
+// 空间id
+const spaceId = computed(() => {
+  return route.query?.spaceId as number
+})
 
 // 上传的图片
 const picture = ref<API.PictureVO>()
@@ -86,13 +95,16 @@ const onSuccess = (newPicture: API.PictureVO) => {
 // 搜索 记得从第一页开始搜索
 const handleFinish: FormProps['onFinish'] = async (values: any) => {
   const pictureId = picture.value?.id
+
   if (!pictureId) {
     return
   }
   const res = await editPictureUsingPost({
     id: pictureId,
+    spaceId: spaceId.value,
     ...values,
   })
+
   if (res.code === 0) {
     message.success('操作成功')
     router.push(`/picture/detail/${pictureId}`)

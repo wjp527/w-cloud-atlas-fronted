@@ -22,6 +22,8 @@ import { uploadPictureByUrlUsingPost, uploadPictureUsingPost } from '@/api/pictu
 
 interface Props {
   picture?: API.PictureVO
+  spaceId?: number
+
   onSuccess?: (newPicture: API.PictureVO) => void
 }
 const props = defineProps<Props>()
@@ -33,8 +35,9 @@ const handleUpload: API.PictureUploadRequest = async () => {
   loading.value = true
 
   try {
-    const params = {
+    const params: API.PictureUploadRequest = {
       fileUrl: fileUrl.value,
+      spaceId: props.spaceId,
     }
 
     // 如果有图片id，则更新该图片，否则新增图片

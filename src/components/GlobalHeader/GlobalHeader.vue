@@ -2,7 +2,8 @@
   <div>
     <div class="global-header" v-if="isShowHeader">
       <a-row :wrap="false">
-        <a-col flex="200px">
+        <a-col>
+          <!-- <a-col flex="200px"> -->
           <router-link to="/">
             <div class="titlt-bar">
               <div class="logo"></div>
@@ -32,6 +33,10 @@
                     <a-menu-item>
                       <router-link to="/user/center">个人中心</router-link>
                     </a-menu-item>
+                    <a-menu-item>
+                      <UserSwitchOutlined />
+                      <router-link to="/my_space">我的空间</router-link>
+                    </a-menu-item>
                     <a-menu-item @click="handleLogout" class="flex items-center">
                       <LogoutOutlined />
                       退出登录
@@ -54,7 +59,7 @@
 </template>
 <script lang="ts" setup name="GlobalHeader">
 import { h, onMounted, ref, computed } from 'vue'
-import { HomeOutlined, LogoutOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, LogoutOutlined, UserSwitchOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -87,6 +92,11 @@ const originItems = ref<MenuProps['items']>([
     key: '/admin/pictureManage',
     label: '图片管理',
     title: '图片管理',
+  },
+  {
+    key: '/admin/spaceManage',
+    label: '空间管理',
+    title: '空间管理',
   },
   {
     key: 'others',
@@ -149,7 +159,7 @@ router.afterEach((to) => {
 
 // 用户登录
 const handleLogin = async () => {
-  router.push('/user/login')
+  router.replace('/user/login')
 }
 
 // 退出登录
@@ -160,7 +170,7 @@ const handleLogout = async () => {
     loginUser.value = {
       userName: '未登录',
     }
-    router.push('/user/login')
+    router.replace('/user/login')
   } else {
     message.error('退出登录失败:' + res.message)
   }

@@ -270,8 +270,6 @@ const searchParams = ref({
   searchText: '',
   // 图片名
   name: '',
-  // 审核状态
-  reviewStatus: '',
 })
 
 const managePictureList = ref([])
@@ -280,7 +278,11 @@ const managePictureListTotal = ref(0)
 // 初始化
 const init = async () => {
   loading.value = true
-  const res = await listPictureByPageUsingPost(searchParams.value)
+  const res = await listPictureByPageUsingPost({
+    ...searchParams.value,
+    // 查找公共图库的图片
+    nullSpaceId: true,
+  })
   if (res.code === 0) {
     managePictureList.value = res.data.records
     managePictureListTotal.value = res.data.total
