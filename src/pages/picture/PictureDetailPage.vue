@@ -60,7 +60,6 @@
               免费下载
             </a-button>
             <a-button v-if="isOwner" :icon="h(EditOutlined)" @click="doEdit">编辑</a-button>
-            {{ isOwner }}==
             <a-popconfirm
               title="是否要删除该图片?"
               ok-text="是"

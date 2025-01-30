@@ -18,7 +18,8 @@ import PictureUpload from '@/components/Picture/PictureUpload.vue'
 import UrlPictureUpload from '@/components/Picture/UrlPictureUpload.vue'
 // 瀑布流组件
 import WaterfallFlow from './components/Test/WaterfallFlow.vue';
-
+// 图片搜索表单组件
+import PictureSearchForm from '@/components/Picture/PictureSearchForm.vue'
 
 const app = createApp(App)
 
@@ -31,6 +32,8 @@ app.component('PictureUpload', PictureUpload)
 app.component('UrlPictureUpload', UrlPictureUpload)
 // 瀑布流组件
 app.component('WaterfallFlow', WaterfallFlow)
+// 图片搜索表单组件
+app.component('PictureSearchForm', PictureSearchForm)
 
 app.use(store)
 app.use(router)

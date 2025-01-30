@@ -22,6 +22,11 @@
         />
       </a-tooltip>
     </a-flex>
+
+    <!-- 搜索表单 -->
+    <PictureSearchForm :onSearch="onSearch" />
+
+    <!-- 图片列表 -->
     <WaterfallFlow :data="dataList" :showOp="true" :onReload="init" />
   </div>
 </template>
@@ -80,6 +85,7 @@ const searchParams = ref({
   // 分类
   category: 'all',
   // 标签
+  tags: [],
   tagList: [],
   // 空间id
   spaceId: '',
@@ -90,12 +96,14 @@ const total = ref(0)
 // 初始化数据
 const init = async () => {
   loading.value = true
+  console.log(selectedCategory.value, '--')
   const params = {
     ...searchParams.value,
-    tags: [] as string[],
+    // tags: [] as string[],
   }
-  if (selectedCategory.value !== 'all') {
-    params.category = selectedCategory.value
+
+  if (params.category !== 'all') {
+    // params.category = selectedCategory.value
   } else {
     params.category = ''
   }
@@ -107,10 +115,10 @@ const init = async () => {
     }
   })
 
+  console.log(params, 'params')
   const res = await listPictureVoByPageUsingPost(params)
   // const res = await listPictureVoByPageWithCacheManagerUsingPost(params)
   if (res.code == 0) {
-    message.success('获取成功')
     dataList.value = res.data?.records || []
     console.log(dataList.value, 'dataList')
     total.value = res.data?.total || 0
@@ -148,6 +156,20 @@ const handleChange = (page: number, pageSize: number) => {
   pageSize = 12
   searchParams.value.current = page
   searchParams.value.pageSize = pageSize
+  init()
+}
+
+// 触发搜索
+const onSearch = (newSearchParams: API.PictureQueryRequest) => {
+  searchParams.value = {
+    ...searchParams.value,
+    ...newSearchParams,
+    current: 1,
+  }
+
+  console.log(newSearchParams, 'newSearchParams')
+  console.log(searchParams.value, 'searchParams')
+
   init()
 }
 
