@@ -17,8 +17,7 @@
 <script lang="ts" setup name="UrlPictureUpload">
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
-import type { UploadProps } from 'ant-design-vue'
-import { uploadPictureByUrlUsingPost, uploadPictureUsingPost } from '@/api/pictureController'
+import { uploadPictureByUrlUsingPost } from '@/api/pictureController'
 
 interface Props {
   picture?: API.PictureVO
@@ -57,24 +56,6 @@ const handleUpload: API.PictureUploadRequest = async () => {
   } finally {
     loading.value = false
   }
-}
-
-/**
- * 上传前校验
- * @param file 文件
- * @returns 是否上传
- */
-const beforeUpload = (file: UploadProps['fileList'][number]) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
-  if (!isJpgOrPng) {
-    message.error('不支持的文件格式，推荐使用jpg、png格式')
-  }
-  // 图片大小校验
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error('图片大小不能超过2M')
-  }
-  return isJpgOrPng && isLt2M
 }
 </script>
 <style lang="less" scoped>

@@ -31,6 +31,12 @@ const props = defineProps<Props>()
 
 const loading = ref<boolean>(false)
 
+/**
+ * 图片上传处理函数
+
+ * @param param0 file 文件信息
+
+ */
 const handleUpload = async ({ file }: any) => {
   loading.value = true
 
@@ -38,6 +44,7 @@ const handleUpload = async ({ file }: any) => {
     const params: API.PictureUploadRequest = props.picture?.id ? { id: props.picture.id } : {}
     params.spaceId = props.spaceId
 
+    // 调用上传接口
     const res = await uploadPictureUsingPost(params, {}, file)
     if (res.code === 0 && res.data) {
       message.success('上传图片成功')

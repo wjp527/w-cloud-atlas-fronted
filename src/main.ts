@@ -18,6 +18,8 @@ import PictureUpload from '@/components/Picture/PictureUpload.vue'
 import UrlPictureUpload from '@/components/Picture/UrlPictureUpload.vue'
 // 瀑布流组件
 import WaterfallFlow from './components/Test/WaterfallFlow.vue';
+
+
 const app = createApp(App)
 
 // 注册全局组件
