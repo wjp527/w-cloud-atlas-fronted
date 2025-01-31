@@ -1,5 +1,5 @@
 <template>
-  <div class="SpaceDetailPage">
+  <div class="SpaceDetailPage pb-10">
     <!-- 空间信息 -->
     <a-flex justify="space-between" align="center">
       <h2 class="text-[24px] mb-4">{{ space.spaceName }}</h2>
@@ -34,11 +34,7 @@
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
 import { onMounted, ref, h, computed } from 'vue'
-import {
-  listPictureVoByPageUsingPost,
-  pictureTagCategoryUsingGet,
-  listPictureVoByPageWithCacheManagerUsingPost,
-} from '@/api/pictureController'
+import { listPictureVoByPageUsingPost, pictureTagCategoryUsingGet } from '@/api/pictureController'
 import { formatSize } from '@/utils/file'
 
 interface Props {

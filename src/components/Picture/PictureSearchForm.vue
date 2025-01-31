@@ -80,9 +80,6 @@
         <a-input-number v-model:value="searchParams.picHeight" class="mb-4" />
       </a-form-item>
 
-      <a-form-item name="picFormat" label="格式">
-        <a-input v-model:value="searchParams.picFormat" class="mb-4" placeholder="请输入格式" />
-      </a-form-item>
 
       <a-form-item>
         <a-button type="primary" html-type="submit"> 搜索 </a-button>

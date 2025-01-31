@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { BreedingRhombusSpinner } from 'epic-spinners'
 // 防抖
 import { debounce } from 'lodash'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons-vue'
+import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 
@@ -103,13 +103,20 @@ const distributeItems = () => {
   })
 }
 
+// 以图搜图
+const doSearch = (item, e: any) => {
+  // 阻止冒泡
+  e.stopPropagation()
+  // 打开新的页面
+  window.open('/search_picture?pictureId=' + item.id)
+}
+
 // 修改
 const doEdit = (item, e: any) => {
   // 组织冒泡
   e.stopPropagation()
 
   // 跳转时，一定要携带 spaceId，确保跳转到正确的空间下
-
   router.push({
     path: '/picture/addPicture',
     query: {
@@ -187,6 +194,10 @@ const doDetail = (id: string) => {
           </a-card-meta>
 
           <template #actions v-if="showOp">
+            <a-space @click="(e) => doSearch(item, e)">
+              <search-outlined />
+              搜索
+            </a-space>
             <a-space @click="(e) => doEdit(item, e)">
               <edit-outlined />
               修改
