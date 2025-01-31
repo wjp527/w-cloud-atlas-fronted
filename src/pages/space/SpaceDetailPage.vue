@@ -25,18 +25,24 @@
 
     <!-- 搜索表单 -->
     <PictureSearchForm :onSearch="onSearch" />
-
+    <!-- 颜色选择 -->
+    <a-form-item label="颜色选择">
+      <color-picker format="hex" @pureColorChange="onColorChange" />
+    </a-form-item>
     <!-- 图片列表 -->
-    <WaterfallFlow :data="dataList" :showOp="true" :onReload="init" />
+    <WaterfallFlow :data="dataList" :loading="loading" :showOp="true" :onReload="init" />
   </div>
 </template>
 <script lang="ts" setup name="SpaceDetailPage">
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
 import { onMounted, ref, h, computed } from 'vue'
-import { listPictureVoByPageUsingPost, pictureTagCategoryUsingGet } from '@/api/pictureController'
+import {
+  listPictureVoByPageUsingPost,
+  pictureTagCategoryUsingGet,
+  searchPictureByColorUsingPost,
+} from '@/api/pictureController'
 import { formatSize } from '@/utils/file'
-
 interface Props {
   id: string | number
 }
@@ -167,6 +173,20 @@ const onSearch = (newSearchParams: API.PictureQueryRequest) => {
   console.log(searchParams.value, 'searchParams')
 
   init()
+}
+
+const onColorChange = async (color: string) => {
+  const res = await searchPictureByColorUsingPost({
+    spaceId: props.id,
+    picColor: color,
+  })
+
+  if (res.code === 0) {
+    dataList.value = res.data ?? []
+    total.value = res.data.length
+  } else {
+    message.error('获取失败: ' + res.message)
+  }
 }
 
 onMounted(() => {

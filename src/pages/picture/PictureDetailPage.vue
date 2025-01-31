@@ -50,6 +50,20 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize ?? 0) }}
             </a-descriptions-item>
+            <a-descriptions-item label="主色调" style="align-items: center">
+              <div class="flex">
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    width: '22px',
+                    height: '22px',
+                    marginRight: '8px',
+                    background: toHexColor(picture.picColor) ?? 'transparent',
+                  }"
+                ></div>
+                {{ picture.picColor ?? '-' }}
+              </div>
+            </a-descriptions-item>
           </a-descriptions>
 
           <a-space>
@@ -84,6 +98,7 @@ import { EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icon
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/User'
 import { downloadImage, formatSize } from '@/utils/file'
+import { toHexColor } from '@/utils/color'
 const router = useRouter()
 const userStore = useUserStore()
 interface Props {

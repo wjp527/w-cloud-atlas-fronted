@@ -13,6 +13,7 @@ const router = useRouter()
 interface Props {
   data: any
   showOp?: boolean
+  loading?: boolean
   onReload?: () => void
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -20,6 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
   data: () => [],
   // 是否显示操作按钮，默认为 false
   showOp: false,
+  loading: false,
   // 数据更新，页面重新加载
   // onReload: () => void
 })
@@ -151,7 +153,6 @@ const updateColumnsCount = debounce(() => {
 
 // 初始化监听
 onMounted(() => {
-  console.log(props.data, '--')
   updateColumnsCount() // 初始化时执行一次
   window.addEventListener('resize', updateColumnsCount)
 })

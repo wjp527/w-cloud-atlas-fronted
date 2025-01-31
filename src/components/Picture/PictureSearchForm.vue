@@ -80,7 +80,6 @@
         <a-input-number v-model:value="searchParams.picHeight" class="mb-4" />
       </a-form-item>
 
-
       <a-form-item>
         <a-button type="primary" html-type="submit"> 搜索 </a-button>
         <a-button @click="handleReset" class="ml-4"> 重置 </a-button>
@@ -92,8 +91,8 @@
 import { onMounted, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import type { FormProps } from 'ant-design-vue'
-import { listPictureByPageUsingPost, pictureTagCategoryUsingGet } from '@/api/pictureController'
-import { PictureOutlined, SoundTwoTone } from '@ant-design/icons-vue'
+import { pictureTagCategoryUsingGet } from '@/api/pictureController'
+import { PictureOutlined } from '@ant-design/icons-vue'
 import dayjs, { Dayjs } from 'dayjs'
 
 // 外部传来的参数
@@ -109,27 +108,6 @@ const searchParams = ref({})
 // 搜索数据
 const doSearch = () => {
   props.onSearch?.({ ...searchParams.value })
-}
-
-const managePictureList = ref([])
-const managePictureListTotal = ref(0)
-
-// 初始化
-const init = async () => {
-  loading.value = true
-  const res = await listPictureByPageUsingPost({
-    ...searchParams.value,
-    // 查找公共图库的图片
-    nullSpaceId: true,
-  })
-  if (res.code === 0) {
-    managePictureList.value = res.data.records
-    managePictureListTotal.value = res.data.total
-    onSearch(managePictureList.value, managePictureListTotal.value)
-  } else {
-    message.error(res.message)
-  }
-  loading.value = false
 }
 
 // 搜索
