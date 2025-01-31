@@ -20,6 +20,8 @@ import UrlPictureUpload from '@/components/Picture/UrlPictureUpload.vue'
 import WaterfallFlow from './components/Test/WaterfallFlow.vue';
 // 图片搜索表单组件
 import PictureSearchForm from '@/components/Picture/PictureSearchForm.vue'
+// 分享弹窗组件
+import ShowModal from '@/components/ShowModal/ShowModal.vue'
 
 const app = createApp(App)
 
@@ -34,6 +36,8 @@ app.component('UrlPictureUpload', UrlPictureUpload)
 app.component('WaterfallFlow', WaterfallFlow)
 // 图片搜索表单组件
 app.component('PictureSearchForm', PictureSearchForm)
+// 分享弹窗组件
+app.component('ShowModal', ShowModal)
 
 // 引入颜色选择器组件
 import Vue3ColorPicker from "vue3-colorpicker";

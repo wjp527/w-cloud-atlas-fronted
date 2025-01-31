@@ -1,5 +1,5 @@
 <template>
-  <div class="PictureDetailPage">
+  <div class="PictureDetailPage pb-20">
     <a-row :gutter="[16, 16]">
       <!-- 图片预览 -->
       <a-col :sm="24" :md="16" :xl="18">
@@ -66,12 +66,16 @@
             </a-descriptions-item>
           </a-descriptions>
 
-          <a-space>
+          <a-space :gutter="{ xs: 1, sm: 2, md: 3, lg: 4 }">
             <a-button type="primary" @click="doDownload">
               <template #icon>
                 <DownloadOutlined />
               </template>
               免费下载
+            </a-button>
+            <a-button type="primary" ghost @click="() => doShare()">
+              <ShareAltOutlined />
+              分享
             </a-button>
             <a-button v-if="isOwner" :icon="h(EditOutlined)" @click="doEdit">编辑</a-button>
             <a-popconfirm
@@ -88,13 +92,20 @@
         </a-card>
       </a-col>
     </a-row>
+
+    <ShowModal ref="showModalRef" :link="shareLink" />
   </div>
 </template>
 <script lang="ts" setup name="PictureDetailPage">
 import { deletePictureUsingPost, getPictureVoByIdUsingGet } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { onMounted, ref, h, computed } from 'vue'
-import { EditOutlined, DeleteOutlined, DownloadOutlined } from '@ant-design/icons-vue'
+import {
+  EditOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons-vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/User'
 import { downloadImage, formatSize } from '@/utils/file'
@@ -172,6 +183,19 @@ const deletePicture = async () => {
   }
 }
 
+// =============================================================
+// 分享功能
+const showModalRef = ref()
+// 分享链接
+const shareLink = ref('')
+
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${picture.value.id}`
+
+  if (showModalRef.value) {
+    showModalRef.value.handleOpen()
+  }
+}
 onMounted(() => {
   fetchPictureDetail()
 })

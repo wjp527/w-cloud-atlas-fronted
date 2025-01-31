@@ -5,7 +5,12 @@ import { useRouter } from 'vue-router'
 import { BreedingRhombusSpinner } from 'epic-spinners'
 // 防抖
 import { debounce } from 'lodash'
-import { DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons-vue'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+  ShareAltOutlined,
+} from '@ant-design/icons-vue'
 import { deletePictureUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 
@@ -165,6 +170,22 @@ onUnmounted(() => {
 const doDetail = (id: string) => {
   router.push(`/picture/detail/${id}`)
 }
+
+// =============================================================
+// 分享功能
+const showModalRef = ref()
+// 分享链接
+const shareLink = ref('')
+
+const doShare = (picture: API.PictureVO, e: any) => {
+  e.stopPropagation()
+  console.log(window.location.origin)
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${picture.id}`
+
+  if (showModalRef.value) {
+    showModalRef.value.handleOpen()
+  }
+}
 </script>
 
 <template>
@@ -195,6 +216,10 @@ const doDetail = (id: string) => {
           </a-card-meta>
 
           <template #actions v-if="showOp">
+            <a-space @click="(e) => doShare(item, e)">
+              <ShareAltOutlined />
+              分享
+            </a-space>
             <a-space @click="(e) => doSearch(item, e)">
               <search-outlined />
               搜索
@@ -218,6 +243,8 @@ const doDetail = (id: string) => {
         </a-card>
       </div>
     </div>
+
+    <ShowModal ref="showModalRef" :link="shareLink" />
   </div>
 </template>
 
