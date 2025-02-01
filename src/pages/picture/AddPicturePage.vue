@@ -21,6 +21,26 @@
       </a-tab-pane>
     </a-tabs>
 
+    <div v-if="picture" class="editBar w-full flex justify-center">
+      <a-button
+        :icon="h(EditOutlined)"
+        type="primary"
+        html-type="submit"
+        class="mb-4 mt-4"
+        @click="doEditPicture()"
+      >
+        编辑图片
+      </a-button>
+      <!-- 图片裁切 -->
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        @success="onCropSuccess"
+      />
+    </div>
+
     <a-form
       v-if="picture"
       layout="vertical"
@@ -64,7 +84,7 @@
   </div>
 </template>
 <script lang="ts" setup name="AddPicturePage">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, h } from 'vue'
 import type { FormProps } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -73,6 +93,7 @@ import {
 } from '@/api/pictureController'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -157,6 +178,19 @@ const getOldPicture = async () => {
     message.error('获取图片失败: ', res.message)
   }
 }
+
+// 裁切图片
+const imageCropperRef = ref()
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value?.handleOpen()
+  }
+}
+
+// 裁切成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 onMounted(() => {
   if (route.query.id) {
     getOldPicture()
@@ -166,8 +200,9 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .AddPicturePage {
-  max-width: 720px;
+  max-width: 800px;
   padding-bottom: 20px;
+  margin: 0 auto;
   // background-color: pink;
 }
 </style>

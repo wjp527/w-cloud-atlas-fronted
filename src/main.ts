@@ -10,6 +10,11 @@ import '@/index.css';
 // 引入权限校验
 import '@/access.ts'
 
+// 图片裁剪组件
+import VueCropper from 'vue-cropper';
+import 'vue-cropper/dist/index.css'
+
+
 // 引入全局组件
 import manageMode from '@/components/Manage/manageMode.vue'
 // 图片上传组件
@@ -24,6 +29,8 @@ import PictureSearchForm from '@/components/Picture/PictureSearchForm.vue'
 import ShowModal from '@/components/Modal/ShowModal.vue'
 // 批量编辑组件
 import BatchEditPictureModal from '@/components/Modal/BatchEditPictureModal.vue'
+// 引入图片裁切组件
+import ImageCropper from '@/components/Test/ImageCropper.vue'
 
 const app = createApp(App)
 
@@ -42,6 +49,8 @@ app.component('PictureSearchForm', PictureSearchForm)
 app.component('ShowModal', ShowModal)
 // 批量编辑组件
 app.component('BatchEditPictureModal', BatchEditPictureModal)
+// 图片裁切组件
+app.component('ImageCropper', ImageCropper)
 
 // 引入颜色选择器组件
 import Vue3ColorPicker from "vue3-colorpicker";
@@ -50,7 +59,10 @@ import "vue3-colorpicker/style.css";
 app.use(store)
 app.use(router)
 app.use(Antd)
+// 引入颜色选择器组件
 app.use(Vue3ColorPicker)
+// 引入图片裁剪组件
+app.use(VueCropper)
 
 app.mount('#app')
 
