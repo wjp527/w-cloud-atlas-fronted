@@ -216,29 +216,20 @@ const doShare = (picture: API.PictureVO, e: any) => {
           </a-card-meta>
 
           <template #actions v-if="showOp">
-            <a-space @click="(e) => doShare(item, e)">
-              <ShareAltOutlined />
-              分享
-            </a-space>
-            <a-space @click="(e) => doSearch(item, e)">
-              <search-outlined />
-              搜索
-            </a-space>
-            <a-space @click="(e) => doEdit(item, e)">
-              <edit-outlined />
-              修改
-            </a-space>
-            <a-space @click="(e) => doDelete(item, e)">
-              <a-popconfirm
-                title="是否要删除该图片?"
-                ok-text="Yes"
-                cancel-text="No"
-                @confirm="doDeleteConfirm(item)"
-              >
-                <delete-outlined />
-                删除
-              </a-popconfirm>
-            </a-space>
+            <ShareAltOutlined @click="(e) => doShare(item, e)" />
+
+            <search-outlined @click="(e) => doSearch(item, e)" />
+
+            <edit-outlined @click="(e) => doEdit(item, e)" />
+
+            <a-popconfirm
+              title="是否要删除该图片?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="doDeleteConfirm(item)"
+            >
+              <delete-outlined @click="(e) => doDelete(item, e)" />
+            </a-popconfirm>
           </template>
         </a-card>
       </div>

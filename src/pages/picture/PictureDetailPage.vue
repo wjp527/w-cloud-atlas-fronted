@@ -66,7 +66,8 @@
             </a-descriptions-item>
           </a-descriptions>
 
-          <a-space :gutter="{ xs: 1, sm: 2, md: 3, lg: 4 }">
+          <!-- style="flex-direction: column" -->
+          <a-space class="flex flex-wrap mt-1">
             <a-button type="primary" @click="doDownload">
               <template #icon>
                 <DownloadOutlined />

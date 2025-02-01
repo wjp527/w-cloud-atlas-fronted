@@ -4,10 +4,15 @@
     <a-flex justify="space-between" align="center">
       <h2 class="text-[24px] mb-4">{{ space.spaceName }}</h2>
 
-      <a-space size="middle">
-        <a-button type="primary" :href="`/picture/addPicture?spaceId=${id}`" target="_blank"
-          >创建图片</a-button
-        >
+      <a-space>
+        <a-space size="middle">
+          <a-button type="primary" :href="`/picture/addPicture?spaceId=${id}`" target="_blank"
+            >创建图片</a-button
+          >
+        </a-space>
+        <a-space size="middle">
+          <a-button type="primary" ghost @click="batchEdit">批量编辑</a-button>
+        </a-space>
       </a-space>
     </a-flex>
     <a-flex vertical>
@@ -31,6 +36,25 @@
     </a-form-item>
     <!-- 图片列表 -->
     <WaterfallFlow :data="dataList" :loading="loading" :showOp="true" :onReload="init" />
+
+    <div class="mb-[24px]" style="text-align: right">
+      <a-pagination
+        v-model:current="pagination.current"
+        v-model:pageSize="pagination.pageSize"
+        :total="pagination.total"
+        show-less-items
+        :pageSizeOptions="[]"
+        @change="handleChange"
+      />
+    </div>
+
+    <!-- 批量编辑 -->
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      :spaceId="id"
+      :pictureList="dataList"
+      :onSuccess="onBatchEditPictureSuccess"
+    />
   </div>
 </template>
 <script lang="ts" setup name="SpaceDetailPage">
@@ -169,9 +193,6 @@ const onSearch = (newSearchParams: API.PictureQueryRequest) => {
     current: 1,
   }
 
-  console.log(newSearchParams, 'newSearchParams')
-  console.log(searchParams.value, 'searchParams')
-
   init()
 }
 
@@ -188,6 +209,28 @@ const onColorChange = async (color: string) => {
     message.error('获取失败: ' + res.message)
   }
 }
+
+// 批量编辑
+const batchEditPictureModalRef = ref()
+
+const batchEdit = () => {
+  batchEditPictureModalRef.value.handleOpen()
+}
+
+// 批量编辑成功回调
+const onBatchEditPictureSuccess = () => {
+  init()
+}
+
+// 分页
+const pagination = computed(() => {
+  return {
+    current: searchParams.value.current,
+    pageSize: searchParams.value.pageSize,
+    total: total.value,
+    onChange: handleChange,
+  }
+})
 
 onMounted(() => {
   fetchSpaceDetail()

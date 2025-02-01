@@ -167,7 +167,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .AddPicturePage {
   max-width: 720px;
-  margin: 0 auto;
+  padding-bottom: 20px;
   // background-color: pink;
 }
 </style>

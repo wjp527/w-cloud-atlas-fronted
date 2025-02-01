@@ -71,7 +71,7 @@
 <script lang="ts" setup name="AddPictureBatchPage">
 import { ref } from 'vue'
 import type { FormProps } from 'ant-design-vue'
-import { uploadPictureBatchUsingPost , pictureTagCategoryUsingGet} from '@/api/pictureController'
+import { uploadPictureBatchUsingPost, pictureTagCategoryUsingGet } from '@/api/pictureController'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { PIC_BATCH_OPTIONS } from '@/constants/picture'
@@ -97,7 +97,6 @@ const handleFinish: FormProps['onFinish'] = async () => {
 
   loading.value.valvue = false
 }
-
 
 // 分类选项
 const categoryOptions = ref<string[]>([])
@@ -129,7 +128,6 @@ const initOptions = async () => {
 }
 // 初始化分类和标签
 initOptions()
-
 </script>
 
 <style lang="less" scoped>

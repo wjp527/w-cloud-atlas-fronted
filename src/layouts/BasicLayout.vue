@@ -36,6 +36,7 @@ import GlobalSider from '@/components/GlobalSider/GlobalSider.vue'
     // background: linear-gradient(to right, #efefef, #ffffff);
     // background-color: pink;
     background-color: #fff;
+    padding-bottom: 200px;
 
     // height: calc(100% - 120px);
   }
