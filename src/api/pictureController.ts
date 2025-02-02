@@ -85,6 +85,42 @@ export async function getPictureVoByIdUsingGet(
   })
 }
 
+/** createPictureImageSynthesisTask POST /api/picture/image_synthesis/create_task */
+export async function createPictureImageSynthesisTaskUsingPost(
+  body: API.CreatePictureImageSynthesisTaskRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseCreateImageSynthesisTaskResponse_>(
+    '/api/picture/image_synthesis/create_task',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: body,
+      ...(options || {}),
+    }
+  )
+}
+
+/** getPictureImageSynthesisTask GET /api/picture/image_synthesis/get_task */
+export async function getPictureImageSynthesisTaskUsingGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.getPictureImageSynthesisTaskUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseGetOutPaintingImageSynthesisTask_>(
+    '/api/picture/image_synthesis/get_task',
+    {
+      method: 'GET',
+      params: {
+        ...params,
+      },
+      ...(options || {}),
+    }
+  )
+}
+
 /** listSpaceLevel GET /api/picture/list/level */
 export async function listSpaceLevelUsingGet(options?: { [key: string]: any }) {
   return request<API.BaseResponseListSpaceLevel_>('/api/picture/list/level', {

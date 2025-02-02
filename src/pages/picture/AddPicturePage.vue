@@ -43,7 +43,7 @@
         "
         @click="doImagePainting()"
       >
-        AI扩图
+        AI处理
       </a-button>
       <!-- 图片裁切 -->
       <ImageCropper
@@ -96,7 +96,11 @@
       </a-form-item>
     </a-form>
 
-    <!-- AI扩图 -->
+    <!--
+      AI处理
+        AI扩图
+        AI图配文
+     -->
     <ImageOutPainting
       ref="imageOutPaintingRef"
       :picture="picture"
@@ -214,7 +218,11 @@ const onCropSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
 
-// AI扩图
+/**
+ *  AI处理
+      AI扩图
+      AI图配文
+ */
 const imageOutPaintingRef = ref(null)
 const doImagePainting = () => {
   if (imageOutPaintingRef.value) {
