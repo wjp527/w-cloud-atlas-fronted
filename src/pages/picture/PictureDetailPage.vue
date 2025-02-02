@@ -94,6 +94,7 @@
       </a-col>
     </a-row>
 
+    <!-- 分享弹窗 -->
     <ShowModal ref="showModalRef" :link="shareLink" />
   </div>
 </template>

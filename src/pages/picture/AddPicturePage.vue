@@ -25,11 +25,25 @@
       <a-button
         :icon="h(EditOutlined)"
         type="primary"
+        ghost
         html-type="submit"
-        class="mb-4 mt-4"
+        class="mb-4 mt-4 mr-4"
         @click="doEditPicture()"
       >
         编辑图片
+      </a-button>
+
+      <a-button
+        :icon="h(EditOutlined)"
+        type="primary"
+        html-type="submit"
+        class="mb-4 mt-4"
+        v-if="
+          !isLargeFile(picture.picSize) && isImageSizeValid(picture.picWidth, picture.picHeight)
+        "
+        @click="doImagePainting()"
+      >
+        AI扩图
       </a-button>
       <!-- 图片裁切 -->
       <ImageCropper
@@ -81,6 +95,14 @@
         <a-button type="primary" html-type="submit" class="w-full mb-10"> 保存 </a-button>
       </a-form-item>
     </a-form>
+
+    <!-- AI扩图 -->
+    <ImageOutPainting
+      ref="imageOutPaintingRef"
+      :picture="picture"
+      :spaceId="spaceId"
+      :onSuccess="onImageOutPaintingSuccess"
+    />
   </div>
 </template>
 <script lang="ts" setup name="AddPicturePage">
@@ -94,6 +116,7 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { EditOutlined } from '@ant-design/icons-vue'
+import { isLargeFile, isImageSizeValid } from '@/utils/file'
 
 const router = useRouter()
 const route = useRoute()
@@ -167,7 +190,6 @@ initOptions()
 
 // 获取要修改的图片
 const getOldPicture = async () => {
-  console.log(route, 'route')
   const res = await getPictureVoByIdUsingGet({
     id: route.query.id as string,
   })
@@ -191,6 +213,18 @@ const doEditPicture = () => {
 const onCropSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
+
+// AI扩图
+const imageOutPaintingRef = ref(null)
+const doImagePainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value?.handleOpen()
+  }
+}
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
 onMounted(() => {
   if (route.query.id) {
     getOldPicture()

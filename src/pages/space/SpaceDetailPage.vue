@@ -121,7 +121,11 @@ const total = ref(0)
 
 // 初始化数据
 const init = async () => {
+  if (!searchParams.value.spaceId) {
+    return
+  }
   loading.value = true
+  console.log(searchParams.value.spaceId, '==')
   console.log(selectedCategory.value, '--')
   const params = {
     ...searchParams.value,

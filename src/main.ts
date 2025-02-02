@@ -31,6 +31,8 @@ import ShowModal from '@/components/Modal/ShowModal.vue'
 import BatchEditPictureModal from '@/components/Modal/BatchEditPictureModal.vue'
 // 引入图片裁切组件
 import ImageCropper from '@/components/Test/ImageCropper.vue'
+// 引入AI扩图组件
+import ImageOutPainting from '@/components/Modal/ImageOutPainting.vue'
 
 const app = createApp(App)
 
@@ -51,6 +53,8 @@ app.component('ShowModal', ShowModal)
 app.component('BatchEditPictureModal', BatchEditPictureModal)
 // 图片裁切组件
 app.component('ImageCropper', ImageCropper)
+// AI扩图组件
+app.component('ImageOutPainting', ImageOutPainting)
 
 // 引入颜色选择器组件
 import Vue3ColorPicker from "vue3-colorpicker";
