@@ -3,7 +3,29 @@
     <a-flex justify="space-between">
       <h2 class="text-[24px]">空间管理</h2>
       <a-space>
-        <a-button type="primary" href="/space/addSpace" target="_blank">创建空间</a-button>
+        <a-space size="middle">
+          <a-button type="primary" href="/space/addSpace" target="_blank">创建空间</a-button>
+        </a-space>
+        <a-space size="middle">
+          <a-button
+            :icon="h(BarChartOutlined)"
+            type="primary"
+            ghost
+            :href="`/space_analyze?queryPublic=1`"
+            target="_blank"
+            >分析公共图库</a-button
+          >
+        </a-space>
+        <a-space size="middle">
+          <a-button
+            :icon="h(BarChartOutlined)"
+            type="primary"
+            ghost
+            :href="`/space_analyze?queryAll=1`"
+            target="_blank"
+            >分析全部空间</a-button
+          >
+        </a-space>
       </a-space>
     </a-flex>
     <div class="mb-4"></div>
@@ -121,15 +143,13 @@
 
         <template v-else-if="column.key === 'action'">
           <a-space wrap>
-            <a-button type="link" size="small" class="mr-1">通过</a-button>
-            <a-popconfirm
-              title="是否要拒绝这条空间数据?"
-              ok-text="是"
-              cancel-text="否"
-              @cancel="cancelDeleteSpaceInfo"
+            <a-button
+              type="link"
+              ghost
+              :href="`/space_analyze?spaceId=${record.id}`"
+              target="_blank"
+              >分析</a-button
             >
-              <a-button type="link" danger size="small">拒绝</a-button>
-            </a-popconfirm>
 
             <a-button
               type="primary"
@@ -274,6 +294,8 @@ const cancelDeleteSpaceInfo = () => {}
 import type { TableProps } from 'ant-design-vue'
 import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space'
 import { formatSize } from '@/utils/file'
+import { BarChartOutlined } from '@ant-design/icons-vue'
+import { h } from 'vue'
 const arr = ref([])
 const rowSelection: TableProps['rowSelection'] = {
   onChange: (selectedRowKeys: string[], selectedRows: API.Space[]) => {

@@ -6,13 +6,21 @@ import { saveAs } from "file-saver"
  * @returns
  */
 export const formatSize = (size: number | string) => {
-  if (!size) return '未知'
-  if (typeof (size) === 'string') size = Number(size)
-  if (size < 1024) return size + 'B'
-  if (size < 1024 * 1024) return (size / 1024).toFixed(2) + 'KB'
-  return (size / 1024 / 1024).toFixed(2) + 'MB'
-}
+  if (!size) return '未知';
+  if (typeof size === 'string') size = Number(size);
 
+  // B
+  if (size < 1024) return size + 'B';
+
+  // KB
+  if (size < 1024 * 1024) return (size / 1024).toFixed(2) + 'KB';
+
+  // MB
+  if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024).toFixed(2) + 'MB';
+
+  // GB
+  return (size / 1024 / 1024 / 1024).toFixed(2) + 'GB';
+};
 
 /**
  * 判断该文件大小是否超过10MB

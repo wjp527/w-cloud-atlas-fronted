@@ -11,7 +11,17 @@
           >
         </a-space>
         <a-space size="middle">
-          <a-button type="primary" ghost @click="batchEdit">批量编辑</a-button>
+          <a-button
+            :icon="h(BarChartOutlined)"
+            type="primary"
+            ghost
+            :href="`/space_analyze?spaceId=${id}`"
+            target="_blank"
+            >图片分析</a-button
+          >
+        </a-space>
+        <a-space size="middle">
+          <a-button @click="batchEdit">批量编辑</a-button>
         </a-space>
       </a-space>
     </a-flex>
@@ -67,6 +77,7 @@ import {
   searchPictureByColorUsingPost,
 } from '@/api/pictureController'
 import { formatSize } from '@/utils/file'
+import { BarChartOutlined } from '@ant-design/icons-vue'
 interface Props {
   id: string | number
 }
@@ -145,7 +156,6 @@ const init = async () => {
     }
   })
 
-  console.log(params, 'params')
   const res = await listPictureVoByPageUsingPost(params)
   // const res = await listPictureVoByPageWithCacheManagerUsingPost(params)
   if (res.code == 0) {
