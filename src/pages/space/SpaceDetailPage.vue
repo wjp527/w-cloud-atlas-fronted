@@ -2,16 +2,37 @@
   <div class="SpaceDetailPage pb-10">
     <!-- 空间信息 -->
     <a-flex justify="space-between" align="center">
-      <h2 class="text-[24px] mb-4">{{ space.spaceName }}</h2>
+      <h2 class="text-[24px] mb-4">
+        {{ space.spaceName }} ({{ SPACE_TYPE_MAP[space.spaceType] }})
+      </h2>
 
       <a-space>
         <a-space size="middle">
-          <a-button type="primary" :href="`/picture/addPicture?spaceId=${id}`" target="_blank"
+          <a-button
+            v-if="canUploadPicture"
+            type="primary"
+            :href="`/picture/addPicture?spaceId=${id}`"
+            target="_blank"
             >创建图片</a-button
           >
         </a-space>
+
         <a-space size="middle">
           <a-button
+            v-if="canManageSpaceUser"
+            type="primary"
+            ghost
+            :icon="h(TeamOutlined)"
+            :href="`/spaceUserManage/${id}`"
+            target="_blank"
+          >
+            成员管理
+          </a-button>
+        </a-space>
+
+        <a-space size="middle">
+          <a-button
+            v-if="canManageSpaceUser"
             :icon="h(BarChartOutlined)"
             type="primary"
             ghost
@@ -21,7 +42,7 @@
           >
         </a-space>
         <a-space size="middle">
-          <a-button @click="batchEdit">批量编辑</a-button>
+          <a-button v-if="canEditPicture" @click="batchEdit">批量编辑</a-button>
         </a-space>
       </a-space>
     </a-flex>
@@ -45,7 +66,14 @@
       <color-picker format="hex" @pureColorChange="onColorChange" />
     </a-form-item>
     <!-- 图片列表 -->
-    <WaterfallFlow :data="dataList" :loading="loading" :showOp="true" :onReload="init" />
+    <WaterfallFlow
+      :data="dataList"
+      :loading="loading"
+      :showOp="true"
+      :onReload="init"
+      :canEdit="canEditPicture"
+      :canDelete="canDeletePicture"
+    />
 
     <div class="mb-[24px]" style="text-align: right">
       <a-pagination
@@ -70,14 +98,16 @@
 <script lang="ts" setup name="SpaceDetailPage">
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
-import { onMounted, ref, h, computed } from 'vue'
+import { onMounted, ref, h, computed, watch } from 'vue'
 import {
   listPictureVoByPageUsingPost,
   pictureTagCategoryUsingGet,
   searchPictureByColorUsingPost,
 } from '@/api/pictureController'
 import { formatSize } from '@/utils/file'
-import { BarChartOutlined } from '@ant-design/icons-vue'
+import { BarChartOutlined, TeamOutlined } from '@ant-design/icons-vue'
+import { SPACE_TYPE_MAP, SPACE_PERMISSION_ENUM } from '@/constants/space'
+
 interface Props {
   id: string | number
 }
@@ -85,12 +115,27 @@ interface Props {
 const props = defineProps<Props>()
 const space = ref<API.SpaceVO>({})
 
+// 通用权限检查函数
+// 返回对应的用户角色权限
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (space.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canManageSpaceUser = createPermissionChecker(SPACE_PERMISSION_ENUM.SPACE_USER_MANAGE)
+const canUploadPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_UPLOAD)
+const canEditPicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDeletePicture = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
+
 // 获取空间详情
 const fetchSpaceDetail = async () => {
-  const res = await getSpaceVoByIdUsingGet({ id })
+  const res = await getSpaceVoByIdUsingGet({ id: props.id })
   try {
     if (res.code === 0) {
       space.value = res.data
+      console.log(res.data, '===')
       searchParams.value.spaceId = space.value.id
       init()
       initOptions()
@@ -101,8 +146,6 @@ const fetchSpaceDetail = async () => {
     message.error(error.message)
   }
 }
-
-const id = props.id as string
 
 const dataList = ref<API.PictureVO[]>([])
 const loading = ref(true)
@@ -136,8 +179,6 @@ const init = async () => {
     return
   }
   loading.value = true
-  console.log(searchParams.value.spaceId, '==')
-  console.log(selectedCategory.value, '--')
   const params = {
     ...searchParams.value,
     // tags: [] as string[],
@@ -160,7 +201,6 @@ const init = async () => {
   // const res = await listPictureVoByPageWithCacheManagerUsingPost(params)
   if (res.code == 0) {
     dataList.value = res.data?.records || []
-    console.log(dataList.value, 'dataList')
     total.value = res.data?.total || 0
   } else {
     message.error('获取失败: ' + res.message)
@@ -249,6 +289,14 @@ const pagination = computed(() => {
 onMounted(() => {
   fetchSpaceDetail()
 })
+watch(
+  () => props.id,
+  () => {
+    fetchSpaceDetail()
+    init()
+    console.log(123)
+  },
+)
 </script>
 
 <style lang="less" scoped>

@@ -78,14 +78,14 @@
               <ShareAltOutlined />
               分享
             </a-button>
-            <a-button v-if="isOwner" :icon="h(EditOutlined)" @click="doEdit">编辑</a-button>
+            <a-button v-if="canEdit" :icon="h(EditOutlined)" @click="doEdit">编辑</a-button>
             <a-popconfirm
               title="是否要删除该图片?"
               ok-text="是"
               cancel-text="否"
               @confirm="deletePicture"
             >
-              <a-button v-if="isOwner" :icon="h(DeleteOutlined)" type="primary" danger
+              <a-button v-if="canDelete" :icon="h(DeleteOutlined)" type="primary" danger
                 >删除</a-button
               >
             </a-popconfirm>
@@ -112,6 +112,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/User'
 import { downloadImage, formatSize } from '@/utils/file'
 import { toHexColor } from '@/utils/color'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space'
 const router = useRouter()
 const userStore = useUserStore()
 interface Props {
@@ -120,6 +121,17 @@ interface Props {
 
 const props = defineProps<Props>()
 const picture = ref<API.PictureVO>({})
+
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 
 // 下载图片
 const doDownload = () => {

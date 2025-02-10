@@ -1,7 +1,7 @@
 <template>
   <div class="AddSpace">
     <div class="text-2xl font-bold mb-4">
-      {{ spaceForm.id ? '修改空间' : '新增空间' }}
+      {{ spaceForm.id ? '修改' : '新增' }} {{ SPACE_TYPE_MAP[spaceType] }}
     </div>
 
     <a-form layout="vertical" :model="spaceForm" @finish="handleFinish" class="mb-10">
@@ -40,7 +40,7 @@
   </div>
 </template>
 <script lang="ts" setup name="AddSpace">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { FormProps } from 'ant-design-vue'
 import {
   addSpaceUsingPost,
@@ -49,7 +49,7 @@ import {
 } from '@/api/spaceController'
 import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { SPACE_LEVEL_OPTIONS } from '@/constants/space'
+import { SPACE_LEVEL_OPTIONS, SPACE_TYPE_ENUM, SPACE_TYPE_MAP } from '@/constants/space'
 import { listSpaceLevelUsingGet } from '@/api/pictureController'
 import { formatSize } from '@/utils/file'
 
@@ -64,16 +64,28 @@ const spaceForm = ref<API.SpaceAddRequest | API.SpaceEditRequest>({})
 
 const spaceLevelList = ref<API.SpaceLevel[]>([])
 
+// 空间类别，默认为私有空间
+const spaceType = computed(() => {
+  if (route.query?.type) {
+    return Number(route.query?.type)
+  } else {
+    return SPACE_TYPE_ENUM.PRIVATE
+  }
+})
+
 // 搜索 记得从第一页开始搜索
 const handleFinish: FormProps['onFinish'] = async (values: any) => {
   loading.value = true
   const spaceId = space.value?.id
   let res
   if (!spaceId) {
+    // 新增空间操作
     res = await addSpaceUsingPost({
       ...values,
+      spaceType: spaceType.value,
     })
   } else {
+    // 修改空间操作
     res = await editSpaceUsingPost({
       id: spaceId,
       ...values,

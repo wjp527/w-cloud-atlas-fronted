@@ -2,7 +2,6 @@
   <div class="ImageCropper">
     <a-modal class="" v-model:open="visible" :title="title" :footer="false" @cancel="handleCancel">
       <!-- 图片裁切 -->
-      {{ imageUrl }}-=
       <vue-cropper
         ref="cropperRef"
         :img="imageUrl"

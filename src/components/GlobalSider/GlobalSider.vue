@@ -7,18 +7,20 @@
   </div>
 </template>
 <script lang="ts" setup name="GlobalSider">
-import { h, onMounted, ref, computed } from 'vue'
-import { PictureOutlined, UserSwitchOutlined } from '@ant-design/icons-vue'
+import { h, onMounted, ref, computed, watchEffect } from 'vue'
+import { PictureOutlined, TeamOutlined, UserSwitchOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/store/User'
+import { SPACE_TYPE_ENUM } from '@/constants/space'
+import { listMyTeamSpaceUsingPost } from '@/api/spaceUserController'
 const userStore = useUserStore()
 const { loginUser } = storeToRefs(userStore)
 const router = useRouter()
 
-// 未经过滤的菜单
-const menuItems = ref<MenuProps['items']>([
+// 固定的菜单列表
+const fixedMenuItems = ref<MenuProps['items']>([
   {
     key: '/',
     icon: () => h(PictureOutlined),
@@ -31,6 +33,13 @@ const menuItems = ref<MenuProps['items']>([
     icon: () => h(UserSwitchOutlined),
     label: '我的空间',
     title: '添加图片',
+  },
+  {
+    key: `/space/addSpace?type=${SPACE_TYPE_ENUM.TEAM}`,
+
+    icon: () => h(TeamOutlined),
+    label: '团队空间',
+    title: '创建团队',
   },
 ])
 
@@ -60,9 +69,8 @@ const items = computed(() => {
  * @param param0
  */
 const doMenuClick = ({ key }: { key: string }) => {
-  router.push({
-    path: key,
-  })
+  console.log(key, 'key')
+  router.push(key)
 }
 // 当前要高亮的菜单
 const current = ref<string[]>([])
@@ -75,6 +83,45 @@ router.afterEach((to) => {
 const init = async () => {
   await userStore.fetchLoginUser()
 }
+
+const teamSpaceList = ref<API.SpaceVO[]>([])
+const menuItems = computed(() => {
+  if (teamSpaceList.value.length > 0) {
+    const teamMenus = teamSpaceList.value.map((item) => {
+      console.log(teamSpaceList.value, 'item')
+      return {
+        key: `/space/detail/${item?.spaceId}`,
+        icon: () => h(PictureOutlined),
+        label: item.space?.spaceName,
+        title: item.space?.spaceName,
+      }
+    })
+
+    const teamSpaceMenuGroup = {
+      type: 'group',
+      label: '我的团队',
+      children: teamMenus,
+      key: 'teamSpace',
+    }
+    return [...fixedMenuItems.value, teamSpaceMenuGroup] as MenuProps['items']
+  }
+  return fixedMenuItems.value
+})
+const fetchTeamSpaceList = async () => {
+  const res = await listMyTeamSpaceUsingPost()
+  if (res.code == 0) {
+    teamSpaceList.value = res.data
+  } else {
+    message.error('获取团队空间失败:' + res.message)
+  }
+}
+
+watchEffect(() => {
+  if (loginUser.value) {
+    fetchTeamSpaceList()
+  }
+})
+
 onMounted(() => {
   init()
 })

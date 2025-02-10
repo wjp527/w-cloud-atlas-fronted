@@ -60,6 +60,17 @@
         ></a-select>
       </a-form-item>
 
+      <a-form-item name="spaceLevel" label="空间级别">
+        <a-select
+          v-model:value="searchParams.spaceType"
+          :options="SPACE_TYPE_OPTIONS"
+          style="min-width: 180px"
+          placeholder="请选择空间类别"
+          allow-clear
+          class="mb-4"
+        ></a-select>
+      </a-form-item>
+
       <a-form-item name="spaceName" label="用户 id">
         <a-input
           v-model:value="searchParams.userId"
@@ -124,6 +135,11 @@
         <!-- 空间级别 -->
         <template v-if="column.dataIndex === 'spaceLevel'">
           <div>空间级别: {{ SPACE_LEVEL_MAP[record.spaceLevel] }}</div>
+        </template>
+
+        <!-- 空间类别 -->
+        <template v-if="column.dataIndex === 'spaceType'">
+          <a-tag>{{ SPACE_TYPE_MAP[record.spaceType] }}</a-tag>
         </template>
 
         <template v-if="column.dataIndex === 'spaceUseInfo'">
@@ -196,6 +212,10 @@ const columns = [
     dataIndex: 'spaceLevel',
   },
   {
+    title: '空间类别',
+    dataIndex: 'spaceType',
+  },
+  {
     title: '使用情况',
     dataIndex: 'spaceUseInfo',
   },
@@ -232,6 +252,8 @@ const searchParams = ref({
   spaceName: '',
   // 空间级别
   spaceLevel: '',
+  // 空间类别
+  spaceType: '',
   // 用户id
   userId: '',
 })
@@ -292,7 +314,12 @@ const deleteSpaceInfo = async (record: any) => {
 const cancelDeleteSpaceInfo = () => {}
 
 import type { TableProps } from 'ant-design-vue'
-import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space'
+import {
+  SPACE_LEVEL_MAP,
+  SPACE_LEVEL_OPTIONS,
+  SPACE_TYPE_MAP,
+  SPACE_TYPE_OPTIONS,
+} from '@/constants/space'
 import { formatSize } from '@/utils/file'
 import { BarChartOutlined } from '@ant-design/icons-vue'
 import { h } from 'vue'

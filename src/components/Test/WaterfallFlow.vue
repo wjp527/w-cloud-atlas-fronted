@@ -20,6 +20,8 @@ interface Props {
   showOp?: boolean
   loading?: boolean
   onReload?: () => void
+  canEdit?: boolean
+  canDelete?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   // 图片数据数组，默认为空数组
@@ -29,6 +31,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   // 数据更新，页面重新加载
   // onReload: () => void
+  canEdit: false,
+  canDelete: false,
 })
 const items = ref()
 const columnsCount = ref(4) // 列数
@@ -67,49 +71,41 @@ const distributeItems = () => {
   // 存储加载完成的图片项及其原始索引
   const loadedItems = []
 
-  items.value.forEach((item, index) => {
-    // 添加 loaded 状态，默认 false
-    item.loaded = false
-    item.originalIndex = index // 记录原始索引
-    const img = new Image()
-    // 如果 thubnailUrl 存在，使用它；否则使用 url 属性作为图片源地址
-
-    img.src = item.thumbnailUrl ?? item.url
-    img.onload = () => {
-      item.imgHeight = img.height * (200 / img.width) // 按比例计算图片高度
-      loadedItems.push(item)
-      item.loaded = true
-
-      // 当所有图片加载完成后，进行排序并分配到列中
-      if (loadedItems.length === items.value.length) {
-        loadedItems.sort((a, b) => a.originalIndex - b.originalIndex)
-        loadedItems.forEach((loadedItem) => {
-          const columnIndex = findShortestColumn()
-          columnData.value[columnIndex].push(loadedItem)
-          columnHeights.value[columnIndex] += loadedItem.imgHeight
-        })
-      }
+  // 添加一个函数来处理图片加载完成后的逻辑
+  const handleImageLoaded = () => {
+    // 只在所有图片都加载完成时执行一次排序和分配
+    if (loadedItems.length === items.value.length) {
+      loadedItems.sort((a, b) => a.originalIndex - b.originalIndex)
+      loadedItems.forEach((loadedItem) => {
+        const columnIndex = findShortestColumn()
+        columnData.value[columnIndex].push(loadedItem)
+        columnHeights.value[columnIndex] += loadedItem.imgHeight
+      })
     }
+  }
+
+  items.value.forEach((item, index) => {
+    item.loaded = false
+    item.originalIndex = index
+    const img = new Image()
+    img.src = item.thumbnailUrl ?? item.url
+
+    img.onload = () => {
+      item.imgHeight = img.height * (200 / img.width)
+      item.loaded = true
+      loadedItems.push(item)
+      handleImageLoaded()
+    }
+
     img.onerror = () => {
       console.error(`Image failed to load: ${item.thumbnailUrl}`)
-      // 加载失败也可以设置 loaded 为 true 或提供备用图片逻辑
       item.loaded = true
-      item.imgHeight = 0 // 假设加载失败高度为 0
+      item.imgHeight = 0
       loadedItems.push(item)
-
-      // 当所有图片加载完成后，进行排序并分配到列中
-      if (loadedItems.length === items.value.length) {
-        loadedItems.sort((a, b) => a.originalIndex - b.originalIndex)
-        loadedItems.forEach((loadedItem) => {
-          const columnIndex = findShortestColumn()
-          columnData.value[columnIndex].push(loadedItem)
-          columnHeights.value[columnIndex] += loadedItem.imgHeight
-        })
-      }
+      handleImageLoaded()
     }
   })
 }
-
 // 以图搜图
 const doSearch = (item, e: any) => {
   // 阻止冒泡
@@ -220,9 +216,10 @@ const doShare = (picture: API.PictureVO, e: any) => {
 
             <search-outlined @click="(e) => doSearch(item, e)" />
 
-            <edit-outlined @click="(e) => doEdit(item, e)" />
+            <edit-outlined v-if="canEdit" @click="(e) => doEdit(item, e)" />
 
             <a-popconfirm
+              v-if="canDelete"
               title="是否要删除该图片?"
               ok-text="Yes"
               cancel-text="No"

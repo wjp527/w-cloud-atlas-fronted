@@ -8,6 +8,7 @@ import { useUserStore } from '@/store/User'
 import { storeToRefs } from 'pinia'
 import { listSpaceVoByPageUsingPost } from '@/api/spaceController'
 import { message } from 'ant-design-vue'
+import { SPACE_TYPE_ENUM } from '@/constants/space'
 // 路由跳转对象
 const router = useRouter()
 
@@ -22,7 +23,12 @@ const checkUserSpace = async () => {
   }
 
   // 如果用户已经登陆，会获取该用户已创建的空间
-  const res = await listSpaceVoByPageUsingPost({ userId: loginUser.value.id })
+  const res = await listSpaceVoByPageUsingPost({
+    userId: loginUser.value.id,
+    current: 1,
+    pageSize: 1,
+    spaceType: SPACE_TYPE_ENUM.PRIVATE,
+  })
   if (res.code === 0) {
     const len = res.data.records.length
     console.log(len, 'len')
