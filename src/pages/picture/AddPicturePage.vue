@@ -51,6 +51,7 @@
         :imageUrl="picture.url"
         :picture="picture"
         :spaceId="spaceId"
+        :space="space"
         @success="onCropSuccess"
       />
     </div>
@@ -110,7 +111,7 @@
   </div>
 </template>
 <script lang="ts" setup name="AddPicturePage">
-import { ref, onMounted, computed, h } from 'vue'
+import { ref, onMounted, computed, h, watchEffect } from 'vue'
 import type { FormProps } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -121,6 +122,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { EditOutlined } from '@ant-design/icons-vue'
 import { isLargeFile, isImageSizeValid } from '@/utils/file'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController'
 
 const router = useRouter()
 const route = useRoute()
@@ -232,6 +234,25 @@ const doImagePainting = () => {
 const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
+
+const space = ref<API.SpaceVO>()
+
+// 获取空间信息
+const fetchSpace = async () => {
+  // 获取数据
+  if (spaceId.value) {
+    const res = await getSpaceVoByIdUsingGet({
+      id: spaceId.value,
+    })
+    if (res.code === 0 && res.data) {
+      space.value = res.data
+    }
+  }
+}
+
+watchEffect(() => {
+  fetchSpace()
+})
 
 onMounted(() => {
   if (route.query.id) {

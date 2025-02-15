@@ -69,7 +69,7 @@ const items = computed(() => {
  * @param param0
  */
 const doMenuClick = ({ key }: { key: string }) => {
-  console.log(key, 'key')
+  console.log(key, '==key')
   router.push(key)
 }
 // 当前要高亮的菜单

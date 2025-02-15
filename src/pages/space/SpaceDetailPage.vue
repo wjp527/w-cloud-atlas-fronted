@@ -135,7 +135,6 @@ const fetchSpaceDetail = async () => {
   try {
     if (res.code === 0) {
       space.value = res.data
-      console.log(res.data, '===')
       searchParams.value.spaceId = space.value.id
       init()
       initOptions()
@@ -190,13 +189,15 @@ const init = async () => {
     params.category = ''
   }
 
-  // 不懂
+  // 将选中的tags转为数组，并添加到params.tags中
+
   selectedTagList.value.forEach((useTag, index) => {
     if (useTag) {
       params.tags.push(tagList.value[index])
     }
   })
 
+  // 获取到该空间id下的图片列表数据
   const res = await listPictureVoByPageUsingPost(params)
   // const res = await listPictureVoByPageWithCacheManagerUsingPost(params)
   if (res.code == 0) {
@@ -293,8 +294,6 @@ watch(
   () => props.id,
   () => {
     fetchSpaceDetail()
-    init()
-    console.log(123)
   },
 )
 </script>
