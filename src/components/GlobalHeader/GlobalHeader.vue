@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="global-header" v-if="isShowHeader">
+    <div class="global-header">
       <a-row :wrap="false">
         <a-col>
           <!-- <a-col flex="200px"> -->
@@ -37,6 +37,10 @@
                       <UserSwitchOutlined />
                       <router-link to="/my_space">我的空间</router-link>
                     </a-menu-item>
+                    <a-menu-item>
+                      <UserSwitchOutlined />
+                      <router-link to="/user/addVip">添加会员</router-link>
+                    </a-menu-item>
                     <a-menu-item @click="handleLogout" class="flex items-center">
                       <LogoutOutlined />
                       退出登录
@@ -51,9 +55,6 @@
           </div>
         </a-col>
       </a-row>
-    </div>
-    <div v-else>
-      <div class="logo"></div>
     </div>
   </div>
 </template>

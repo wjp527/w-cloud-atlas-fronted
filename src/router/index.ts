@@ -91,6 +91,13 @@ const router = createRouter({
       props: true,
     },
 
+    {
+      path: '/user/addVip',
+      name: '添加会员',
+      component: () => import('../pages/user/addVip.vue'),
+      props: true,
+    },
+
 
   ],
 })

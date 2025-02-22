@@ -21,7 +21,7 @@
       </a-form-item>
 
       <a-form-item>
-        <a-button type="primary" html-type="submit"> 搜索 </a-button>
+        <a-button type="primary" html-type="submit"> 添加用户 </a-button>
       </a-form-item>
     </a-form>
 

@@ -101,6 +101,13 @@
         <template v-if="column.dataIndex === 'url'">
           <a-image :src="record.url" :width="80" />
         </template>
+        <template v-if="column.dataIndex === 'name'">
+          <a-tooltip>
+            <template #title>{{ record.name }}</template>
+            <!-- 文字一行展示，超出部分省略号 -->
+            <span class="text-xs w-[60px] inline-block truncate">{{ record.name }}</span>
+          </a-tooltip>
+        </template>
         <template v-if="column.dataIndex === 'tags'">
           <a-space wrap>
             <a-tag v-for="tag in JSON.parse(record.tags || '[]')" :key="tag" color="blue">{{
@@ -443,4 +450,9 @@ onMounted(() => {
 })
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.tooltip-content {
+  display: inline-block;
+  width: 60px;
+}
+</style>

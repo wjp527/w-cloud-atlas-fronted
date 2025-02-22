@@ -1,6 +1,5 @@
 <template>
   <div class="GlobalSider" v-if="loginUser.id">
-    <!-- collapsedWidth="0" -->
     <a-layout-sider collapsible style="background: #fff" breakpoint="lg">
       <a-menu v-model:selectedKeys="current" mode="inline" :items="items" @click="doMenuClick" />
     </a-layout-sider>

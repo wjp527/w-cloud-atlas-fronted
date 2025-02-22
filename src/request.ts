@@ -5,7 +5,8 @@ import { message } from "ant-design-vue";
 // 配置前端跨域
 // const DEV_BASE_URL = "";
 const DEV_BASE_URL = "http://localhost:8121";
-// const PROD_BASE_URL = "http://81.69.229.63";
+// 不要加端口号
+const PROD_BASE_URL = "http://121.5.8.36";
 // 创建 Axios 实例
 const myAxios = axios.create({
   baseURL: DEV_BASE_URL,
