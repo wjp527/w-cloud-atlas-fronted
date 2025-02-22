@@ -89,6 +89,7 @@ app.component('SpaceRankAnalyze', SpaceRankAnalyze)
 // 引入颜色选择器组件
 import Vue3ColorPicker from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
+import VueLazyload from 'vue-lazyload';
 
 app.use(store)
 app.use(router)
@@ -100,5 +101,18 @@ app.use(VueCropper)
 // 引入图表组件
 app.component('v-chart', VChart)
 
-app.mount('#app')
+import loadingImage from '@/assets/loading.gif'
+import errorImage from '@/assets/logo.png'
 
+app.use(VueLazyload, {
+  preLoad: 1.3,
+  loading: loadingImage,
+  error: errorImage,
+  attempt: 3,
+  observer: true,
+  observerOptions: {
+    rootMargin: '50px',
+    threshold: 0.1
+  }
+})
+app.mount('#app')

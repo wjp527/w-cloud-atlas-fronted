@@ -35,9 +35,10 @@
       :can-edit="true"
       :can-delete="true"
     />
-
+ 
     <div ref="loadMoreTrigger" class="load-more-trigger" :class="{ loading: loading }">
       <transition name="fade">
+   
         <div v-if="loading" class="loading-container">
           <a-spin />
         </div>

@@ -5,10 +5,16 @@
         <a-card hoverable @click="doDetail(item.id)">
           <template #cover>
             <div class="image-container">
-              <!-- 移除 loading="lazy" 属性，因为它可能导致图片延迟加载 -->
+              <!-- 使用自定义错误状态 -->
+              <div v-show="item.error" class="error-overlay">
+                <ExclamationCircleOutlined style="font-size: 24px" />
+                <span>加载失败</span>
+              </div>
               <img
-                :src="item.thumbnailUrl ?? item.url"
+                v-lazy="item.thumbnailUrl ?? item.url"
                 :alt="item.title"
+                @load="onImageLoad(item)"
+                @error="onImageError(item)"
                 style="width: 100%; height: auto; display: block"
               />
               <div class="p-2">
@@ -22,7 +28,7 @@
                     <a-tag v-else>无</a-tag>
                   </div>
                 </div>
-                <div class="mb-2">
+                <div class="">
                   <div class="flex items-center">
                     <div class="mr-2 text-sm text-gray-500">标签:</div>
                     <a-tag
@@ -37,20 +43,13 @@
                   </div>
                 </div>
               </div>
-              <!-- 添加加载中的占位 -->
-              <div v-if="loading" class="loading-placeholder">
-                <a-spin />
-              </div>
             </div>
           </template>
 
           <template #actions v-if="showOp">
             <ShareAltOutlined @click="(e) => doShare(item, e)" />
-
             <search-outlined @click="(e) => doSearch(item, e)" />
-
             <edit-outlined v-if="canEdit" @click="(e) => doEdit(item, e)" />
-
             <a-popconfirm
               v-if="canDelete"
               title="是否要删除该图片?"
@@ -61,19 +60,12 @@
               <delete-outlined @click="(e) => doDelete(item, e)" />
             </a-popconfirm>
           </template>
-
-          <a-card-meta :title="item.title">
-            <template #description>
-              <div class="description-content">
-                {{ item.description }}
-              </div>
-            </template>
-          </a-card-meta>
         </a-card>
       </div>
     </div>
   </div>
 </template>
+
 <script setup lang="ts" name="WaterfallFlow">
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
@@ -87,6 +79,8 @@ import {
 import { deletePictureUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 
+// 默认图片，你需要替换成实际的图片路径
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 const router = useRouter()
 
 interface Props {
@@ -122,18 +116,6 @@ const findShortestColumn = () => {
   return columnHeights.value.indexOf(minHeight)
 }
 
-const distributeItems = () => {
-  initColumnHeights()
-  columnData.value = Array.from({ length: columnsCount.value }, () => [])
-
-  items.value.forEach((item) => {
-    const shortestColumnIndex = findShortestColumn()
-    columnData.value[shortestColumnIndex].push(item)
-    columnHeights.value[shortestColumnIndex] += 300
-  })
-}
-
-// 响应式调整列数
 const adjustColumnsCount = () => {
   const width = window.innerWidth
   if (width < 576) {
@@ -157,8 +139,12 @@ const handleResize = debounce(() => {
 watch(
   () => props.data,
   async (newValue) => {
-    // 直接使用数据，不添加 loaded 状态
-    items.value = newValue
+    items.value = newValue.map((item) => ({
+      ...item,
+      loading: true,
+      loaded: false,
+      error: false,
+    }))
     await nextTick()
     distributeItems()
   },
@@ -172,32 +158,25 @@ const doDetail = (id: number) => {
 
 // 分享功能
 const showModalRef = ref()
-// 分享链接
 const shareLink = ref('')
 
 const doShare = (picture: API.PictureVO, e: any) => {
   e.stopPropagation()
-  console.log(window.location.origin)
   shareLink.value = `${window.location.protocol}//${window.location.host}/picture/detail/${picture.id}`
-
   if (showModalRef.value) {
     showModalRef.value.handleOpen()
   }
 }
+
 // 以图搜图
-const doSearch = (item, e: any) => {
-  // 阻止冒泡
+const doSearch = (item: any, e: any) => {
   e.stopPropagation()
-  // 打开新的页面
   window.open('/search_picture?pictureId=' + item.id)
 }
 
 // 修改
-const doEdit = (item, e: any) => {
-  // 组织冒泡
+const doEdit = (item: any, e: any) => {
   e.stopPropagation()
-
-  // 跳转时，一定要携带 spaceId，确保跳转到正确的空间下
   router.push({
     path: '/picture/addPicture',
     query: {
@@ -207,9 +186,10 @@ const doEdit = (item, e: any) => {
   })
 }
 
-const doDelete = async (item, e) => {
+const doDelete = async (item: any, e: any) => {
   e.stopPropagation()
 }
+
 // 删除确认
 const doDeleteConfirm = async (item: any) => {
   try {
@@ -223,6 +203,36 @@ const doDeleteConfirm = async (item: any) => {
   } catch (error) {
     message.error('删除失败')
   }
+}
+
+// 懒加载
+const onImageLoad = (item: any) => {
+  item.loading = false
+  item.loaded = true
+  item.error = false
+  distributeItems()
+}
+
+const onImageError = (item: any) => {
+  item.loading = false
+  item.loaded = false
+  item.error = true
+}
+
+const distributeItems = () => {
+  initColumnHeights()
+  columnData.value = Array.from({ length: columnsCount.value }, () => [])
+
+  items.value.forEach((item) => {
+    if (!item.hasOwnProperty('loading')) {
+      item.loading = true
+      item.loaded = false
+      item.error = false
+    }
+    const shortestColumnIndex = findShortestColumn()
+    columnData.value[shortestColumnIndex].push(item)
+    columnHeights.value[shortestColumnIndex] += 300
+  })
 }
 
 onMounted(() => {
@@ -260,15 +270,58 @@ onUnmounted(() => {
 .image-container {
   position: relative;
   width: 100%;
-  min-height: 200px; // 添加最小高度
+  min-height: 200px;
   // background: #f5f5f5;
   overflow: hidden;
+  // 控制 loading 图片大小
+  :deep(img[lazy='loading']) {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: contain;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 
+  // 实际图片加载完成后恢复原有样式
+  :deep(img[lazy='loaded']) {
+    width: 100% !important;
+    height: auto !important;
+    position: static;
+    transform: none;
+  }
   img {
     width: 100%;
     height: auto;
     display: block;
     object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+  }
+}
+
+.loading-overlay,
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 1;
+}
+
+.error-overlay {
+  color: #ff4d4f;
+
+  span {
+    margin-top: 8px;
+    font-size: 14px;
   }
 }
 
@@ -277,9 +330,9 @@ onUnmounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
-// 移除所有与 opacity 和 transform 相关的过渡效果
 .description-content {
   overflow: hidden;
   text-overflow: ellipsis;
