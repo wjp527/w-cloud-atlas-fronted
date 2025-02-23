@@ -64,11 +64,10 @@ const items = computed(() => {
 })
 
 /**
- * 菜单点击事件
+ * 菜单点击事件 
  * @param param0
  */
 const doMenuClick = ({ key }: { key: string }) => {
-  console.log(key, '==key')
   router.push(key)
 }
 // 当前要高亮的菜单

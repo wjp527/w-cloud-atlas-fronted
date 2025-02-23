@@ -13,7 +13,13 @@
       </a-layout>
 
       <a-layout-footer class="footer">
-        <a href="https://github.com/wjp527" target="_blank"> wjp </a>
+        <div>
+          <a href="https://beian.miit.gov.cn/" target="_blank">
+            <span>备案号 </span>
+            <span>苏ICP备2025155289号-1</span>
+          </a>
+        </div>
+        <a href="https://github.com/wjp527" target="_blank">&copy; wjp </a>
       </a-layout-footer>
     </a-layout>
   </div>

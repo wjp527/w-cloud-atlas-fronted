@@ -5,7 +5,7 @@
       :show-upload-list="false"
       :custom-request="handleUpload"
       :before-upload="beforeUpload"
-    >
+    > 
       <img v-if="picture?.url" :src="picture.url" alt="avatar" />
       <div v-else>
         <loading-outlined v-if="loading"></loading-outlined>

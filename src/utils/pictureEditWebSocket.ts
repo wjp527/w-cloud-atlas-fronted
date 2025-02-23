@@ -19,7 +19,8 @@ export default class PictureEditWebSocket {
     console.log(this.pictureId, '===')
 
     const DEV_BASE_URL = "localhost:8121";
-    const PROD_BASE_URL = "121.5.8.36";
+    // http://cloudatlas.wcoder.online
+    const PROD_BASE_URL = "cloudatlas.wcoder.online";
     // 本地环境
     // const url = `ws://${DEV_BASE_URL}/api/ws/picture/edit?pictureId=${this.pictureId}`
 

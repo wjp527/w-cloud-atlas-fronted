@@ -6,10 +6,11 @@ import { message } from "ant-design-vue";
 // const DEV_BASE_URL = "";
 const DEV_BASE_URL = "http://localhost:8121";
 // 不要加端口号
-const PROD_BASE_URL = "http://121.5.8.36";
+// cloudatlas.wcoder.online
+const PROD_BASE_URL = "http://cloudatlas.wcoder.online";
 // 创建 Axios 实例
 const myAxios = axios.create({
-  baseURL: DEV_BASE_URL,
+  baseURL: PROD_BASE_URL,
   timeout: 10000,
   withCredentials: true,
 });
