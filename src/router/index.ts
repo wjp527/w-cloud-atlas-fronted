@@ -97,6 +97,11 @@ const router = createRouter({
       component: () => import('../pages/user/addVip.vue'),
       props: true,
     },
+    {
+      path: '/websiteIntroduction',
+      name: '网站介绍',
+      component: () => import('../pages/website/websiteIntroduction.vue')
+    }
 
 
   ],

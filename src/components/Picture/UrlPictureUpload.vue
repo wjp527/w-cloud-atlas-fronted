@@ -6,7 +6,7 @@
         style="width: calc(100% - 80px)"
         placeholder="请输入图片链接"
       />
-      <a-button class="w-20" type="primary" @click="handleUpload">Submit</a-button>
+      <a-button class="w-20" type="primary" @click="handleUpload">保存</a-button>
     </a-input-group>
 
     <div class="flex justify-center mt-1">

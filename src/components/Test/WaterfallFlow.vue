@@ -10,7 +10,7 @@
                 <ExclamationCircleOutlined style="font-size: 24px" />
                 <span>加载失败</span>
               </div>
-        
+
               <img
                 v-lazy="item.thumbnailUrl ?? item.url"
                 :alt="item.title"
@@ -20,12 +20,12 @@
               />
               <div class="p-2">
                 <a-tooltip>
-    <template #title> {{ item.name }}</template>
-    <p class="text-base font-bold w-[240px] mb-2 inline-block truncate">
-                  {{ item.name }}
-                </p>
-  </a-tooltip>
-                
+                  <template #title> {{ item.name }}</template>
+                  <p class="text-base font-bold w-[240px] mb-2 inline-block truncate">
+                    {{ item.name }}
+                  </p>
+                </a-tooltip>
+
                 <div class="mb-2">
                   <div class="flex items-center h-10">
                     <div class="mr-2 text-sm text-gray-500">分类:</div>
@@ -68,6 +68,8 @@
         </a-card>
       </div>
     </div>
+
+    <ShowModal ref="showModalRef" :link="shareLink" />
   </div>
 </template>
 

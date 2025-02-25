@@ -51,8 +51,18 @@
         </div>
       </a-form-item>
 
+
+      <a-form-item
+        label="用户标识"
+        name="id"
+      >
+        <a-typography-link copyable>
+          {{ loginUser.id }}
+        </a-typography-link>
+      </a-form-item>
+
       <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
-        <a-button type="primary" html-type="submit">Submit</a-button>
+        <a-button type="primary" html-type="submit">保存</a-button>
       </a-form-item>
     </a-form>
   </div>

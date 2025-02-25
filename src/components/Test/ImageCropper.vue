@@ -75,27 +75,6 @@ const isTeamSpace = computed(() => props.space?.spaceType === SPACE_TYPE_ENUM.TE
 const visible = ref<boolean>(false)
 const cropperRef = ref<InstanceType<typeof VueCropper> | null>(null)
 
-const changeScale = (num: number) => {
-  num = num || 1
-  cropperRef.value?.changeScale(num)
-
-  if (num > 0) {
-    editAction(PICTURE_EDIT_ACTION_MAP.ZOOM_IN)
-  } else {
-    editAction(PICTURE_EDIT_ACTION_MAP.ZOOM_OUT)
-  }
-}
-
-const rotateLeft = () => {
-  cropperRef.value?.rotateLeft()
-  editAction(PICTURE_EDIT_ACTION_MAP.ROTATE_LEFT)
-}
-
-const rotateRight = () => {
-  cropperRef.value?.rotateRight()
-  editAction(PICTURE_EDIT_ACTION_MAP.ROTATE_RIGHT)
-}
-
 // 确认裁切图片
 const handleConfirm = () => {
   cropperRef.value.getCropBlob((blob: Blob) => {
@@ -164,6 +143,7 @@ const handleCancel = () => {
   editingUser.value = undefined
 }
 
+// ----------------------------- 实时编辑 -----------------------------
 const loginUser = userStore.loginUser
 // 正在编辑的用户
 const editingUser = ref<API.UserVO>()
@@ -173,6 +153,7 @@ const canEnterEdit = computed(() => {
 })
 // 正在编辑的用户是本人，可退出编辑
 const canExitEdit = computed(() => {
+  // 确保当前编辑的用户是本人，才可以退出
   return editingUser.value?.id === loginUser.id
 })
 // 可以点击编辑图片的操作按钮
@@ -203,7 +184,47 @@ function base64ToFile(base64, fileName) {
   return new File([blob], fileName, { type })
 }
 
+// 编写 WebSocket 逻辑
 let websocket: PictureEditWebSocket | null
+
+// 图片操作方法
+const changeScale = (num: number) => {
+  num = num || 1
+  cropperRef.value?.changeScale(num)
+
+  if (num > 0) {
+    editAction(PICTURE_EDIT_ACTION_MAP.ZOOM_IN)
+  } else {
+    editAction(PICTURE_EDIT_ACTION_MAP.ZOOM_OUT)
+  }
+}
+
+// 图片左移
+const rotateLeft = () => {
+  cropperRef.value?.rotateLeft()
+  editAction(PICTURE_EDIT_ACTION_MAP.ROTATE_LEFT)
+}
+
+// 图片右移
+const rotateRight = () => {
+  cropperRef.value?.rotateRight()
+  editAction(PICTURE_EDIT_ACTION_MAP.ROTATE_RIGHT)
+}
+
+// 编辑图片状态
+const editAction = (action: string) => {
+  console.log(action, 'action')
+  if (websocket) {
+    // 发送编辑图片状态的请求
+    websocket.sendMessage({
+      // 编辑图片状态 【英文】
+      type: PICTURE_EDIT_MESSAGE_TYPE_ENUM.EDIT_ACTION,
+      // 编辑图片状态 【中文】
+      editAction: action,
+    })
+  }
+}
+
 // 初始化 WebSocket 连接，绑定事件
 const initWebSocket = () => {
   const pictureId = props.picture?.id
@@ -222,30 +243,33 @@ const initWebSocket = () => {
   // 建立 WebSocket 链接
   websocket.connect()
 
+  // 注册确认裁切图片事件
   websocket.on('confirm', (msg) => {
     console.log(msg, 'msg')
     console.log('保存图片: ', msg)
   })
 
-  // 监听通知信息
+  // 注册通知信息事件
   websocket.on(PICTURE_EDIT_MESSAGE_TYPE_ENUM.INFO, (msg) => {
     console.log('收到通知消息: ', msg)
     message.info(msg.message)
   })
 
+  // 注册错误消息事件
   // 监听错误消息
   websocket.on(PICTURE_EDIT_MESSAGE_TYPE_ENUM.ERROR, (msg) => {
     console.log('收到错误消息: ', msg)
     message.error(msg.message)
   })
 
-  // 监听进入编辑状态的消息
+  // 注册进入编辑状态消息
   websocket.on(PICTURE_EDIT_MESSAGE_TYPE_ENUM.ENTER_EDIT, (msg) => {
     console.log('收到进入编辑状态消息: ', msg)
     message.info(msg.message)
     editingUser.value = msg.user
   })
 
+  // 注册编辑操作信息
   // 监听编辑操作信息
   websocket.on(PICTURE_EDIT_MESSAGE_TYPE_ENUM.EDIT_ACTION, (msg) => {
     console.log('收到编辑操作: ', msg)
@@ -298,17 +322,6 @@ const exitEdit = () => {
     // 发送退出编辑状态的请求
     websocket.sendMessage({
       type: PICTURE_EDIT_MESSAGE_TYPE_ENUM.EXIT_EDIT,
-    })
-  }
-}
-
-// 编辑图片状态
-const editAction = (action: string) => {
-  if (websocket) {
-    // 发送编辑图片状态的请求
-    websocket.sendMessage({
-      type: PICTURE_EDIT_MESSAGE_TYPE_ENUM.EDIT_ACTION,
-      editAction: action,
     })
   }
 }

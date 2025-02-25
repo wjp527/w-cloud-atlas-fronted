@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="global-header">
+    <div class="global-header" v-if="loginUser?.id">
       <a-row :wrap="false">
         <a-col>
           <!-- <a-col flex="200px"> -->
           <router-link to="/">
             <div class="titlt-bar">
               <div class="logo"></div>
-              <div class="title">w云图库</div>
+              <div class="title">π立方</div>
             </div>
           </router-link>
         </a-col>
@@ -22,7 +22,7 @@
 
         <a-col flex="120px">
           <div class="user-login-status">
-            <div v-if="loginUser.id">
+            <div v-if="loginUser?.id">
               <a-dropdown>
                 <a class="ant-dropdown-link" @click.prevent>
                   <a-avatar :src="loginUser.userAvatar" />
@@ -55,6 +55,11 @@
           </div>
         </a-col>
       </a-row>
+    </div>
+    <div v-else>
+      <div class="flex items-center justify-center">
+        <div class="logo"></div> 
+      </div>
     </div>
   </div>
 </template>
@@ -98,6 +103,11 @@ const originItems = ref<MenuProps['items']>([
     key: '/admin/spaceManage',
     label: '空间管理',
     title: '空间管理',
+  },
+  {
+    key: '/websiteIntroduction',
+    label: '网站介绍',
+    title: '网站介绍',
   },
   {
     key: 'others',
@@ -219,7 +229,7 @@ onMounted(() => {
   background: url('@/assets/logo.png') no-repeat center center;
   background-size: contain;
   width: 58px;
-  height: 58px;
+  height: 58px; 
   margin: 0 auto;
 }
 </style>
