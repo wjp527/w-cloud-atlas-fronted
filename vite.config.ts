@@ -15,21 +15,14 @@ export default defineConfig({
   plugins: [
     vue(),
     vueDevTools(),
-    removeConsole()
+    // 生产环境移除 console
+    removeConsole({
+      includes: ['log', 'warn', 'error', 'info', 'debug']
+    })
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
-  },
-  // build: {
-  //   minify: 'terser',
-  //   terserOptions: {
-  //     compress: {
-  //       // 生产环境移除 console
-  //       drop_console: true,
-  //       drop_debugger: true,
-  //     },
-  //   },
-  // }
+  }
 })

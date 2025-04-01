@@ -26,14 +26,12 @@
         </a-form-item>
         <a-form-item label="用户头像" name="userAvatar">
           <a-upload
-            v-model:file-list="fileList"
             name="avatar"
             list-type="picture-card"
             class="avatar-uploader"
             :show-upload-list="false"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
             :before-upload="beforeUpload"
-            @change="handleChange"
+            :custom-request="handleUpload"
           >
             <img v-if="modalData.userAvatar" :src="modalData.userAvatar" alt="avatar" />
             <div v-else>
@@ -51,7 +49,8 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
-import type { UploadChangeParam, UploadProps } from 'ant-design-vue'
+import type { UploadProps } from 'ant-design-vue'
+import { userUploadFileUsingPost } from '@/api/userController'
 
 interface Props {
   open: boolean
@@ -99,28 +98,29 @@ function getBase64(img: Blob, callback: (base64Url: string) => void) {
   reader.readAsDataURL(img)
 }
 
-const fileList = ref([])
 const loading = ref<boolean>(false)
-const imageUrl = ref<string>('')
 
-const handleChange = (info: UploadChangeParam) => {
-  if (info.file.status === 'uploading') {
-    loading.value = true
-    return
-  }
-  if (info.file.status === 'done') {
-    // Get this url from response in real world.
-    getBase64(info.file.originFileObj, (base64Url: string) => {
-      imageUrl.value = base64Url
-      loading.value = false
-    })
-  }
-  if (info.file.status === 'error') {
+// 上传图片
+const handleUpload = async ({ file }: any) => {
+  loading.value = true
+
+  try {
+    // 调用上传接口
+    const res = await userUploadFileUsingPost({}, file)
+    if (res.code === 0 && res.data) {
+      message.success('上传图片成功')
+      modalData.value.userAvatar = res.data
+    } else {
+      message.error('上传图片失败:' + res.message)
+    }
+  } catch (error) {
+    message.error('上传图片失败,error:' + error.message)
+  } finally {
     loading.value = false
-    message.error('upload error')
   }
 }
 
+// 上传图片前校验
 const beforeUpload = (file: UploadProps['fileList'][number]) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
   if (!isJpgOrPng) {

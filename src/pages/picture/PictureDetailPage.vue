@@ -124,7 +124,9 @@ const picture = ref<API.PictureVO>({})
 
 // 通用权限检查函数
 function createPermissionChecker(permission: string) {
+  console.log(permission, 'permission')
   return computed(() => {
+    console.log((picture.value.permissionList ?? []).includes(permission), '=-=-')
     return (picture.value.permissionList ?? []).includes(permission)
   })
 }

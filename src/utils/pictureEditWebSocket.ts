@@ -11,7 +11,7 @@ export default class PictureEditWebSocket {
   /**
    * {
    *    EDIT_ACTION: fun,
-   *    ENTER_EDIT: fun,  
+   *    ENTER_EDIT: fun,
    *    ERROR: fun,
    *    EXIT_EDIT: fun,
    *    INFO: fun,
@@ -45,7 +45,7 @@ export default class PictureEditWebSocket {
     // const url = `ws://${DEV_BASE_URL}/api/ws/picture/edit?pictureId=${this.pictureId}`
 
     // 线上环境
-    const url = `ws://${PROD_BASE_URL}/api/ws/picture/edit?pictureId=${this.pictureId}`
+    const url = `ws://${DEV_BASE_URL}/api/ws/picture/edit?pictureId=${this.pictureId}`
     this.socket = new WebSocket(url)
 
     // 设置携带 cookie
@@ -63,12 +63,21 @@ export default class PictureEditWebSocket {
     // 接收消息的处理函数
     // 当客户端收到服务端 broadcastToPicture 中的 sendMessage 发送 WebSocket消息，就会触发这个监听消息事件
     this.socket.onmessage = (event) => {
+      // 这个 message 就是后端传来的消息
+      /**
+        消息类型，例如 "INFO", "ERROR", "ENTER_EDIT", "EXIT_EDIT", "EDIT_ACTION"
+              type;
+        信息: message;
+        执行的编辑动作: editAction;
+        用户信息: user;
+      */
       const message = JSON.parse(event.data)
       console.log('收到消息:', message)
 
       // 根据消息类型触发对应的自定义事件
       const type = message.type
       this.triggerEvent(type, message)
+      console.log(message, 'message');
     }
 
     // 监听连接关闭事件
@@ -100,7 +109,7 @@ export default class PictureEditWebSocket {
    * @param message 要发送的消息对象，将被转换为 JSON 字符串
    */
   sendMessage(message: object) {
-    // 判断 WebSocket 是否连接  
+    // 判断 WebSocket 是否连接
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       // 向后端发送消息
       this.socket.send(JSON.stringify(message))
@@ -133,6 +142,7 @@ export default class PictureEditWebSocket {
     if (handlers) {
       // 遍历执行事件处理器
       handlers.forEach((handler: any) => handler(data))
+      console.log(handlers, 'handlers===');
     }
   }
 }

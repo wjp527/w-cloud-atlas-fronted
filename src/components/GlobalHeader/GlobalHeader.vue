@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="global-header" v-if="loginUser?.id">
+    <div class="global-header">
       <a-row :wrap="false">
         <a-col>
           <!-- <a-col flex="200px"> -->
@@ -11,7 +11,7 @@
             </div>
           </router-link>
         </a-col>
-        <a-col flex="auto">
+        <a-col flex="auto" v-if="loginUser?.id">
           <a-menu
             v-model:selectedKeys="current"
             mode="horizontal"
@@ -56,26 +56,21 @@
         </a-col>
       </a-row>
     </div>
-    <div v-else>
-      <div class="flex items-center justify-center">
-        <div class="logo"></div> 
-      </div>
-    </div>
   </div>
 </template>
 <script lang="ts" setup name="GlobalHeader">
 import { h, onMounted, ref, computed } from 'vue'
 import { HomeOutlined, LogoutOutlined, UserSwitchOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/store/User'
-import { userLogoutUsingPost } from '@/api/userController'
+import { userLogoutUsingPost, getLoginUserUsingGet } from '@/api/userController'
 const userStore = useUserStore()
 const { loginUser } = storeToRefs(userStore)
 
 const router = useRouter()
-
+const route = useRoute()
 // 未经过滤的菜单
 const originItems = ref<MenuProps['items']>([
   {
@@ -157,6 +152,15 @@ const isShowHeader = computed(() => {
  * @param param0
  */
 const doMenuClick = ({ key }: { key: string }) => {
+  // 如何获取上一次跳转的路径
+  const lastPath = route.path
+  console.log(lastPath, 'lastPath')
+  if (key === 'others') {
+    router.push({
+      path: lastPath,
+    })
+    return
+  }
   router.push({
     path: key,
   })
@@ -188,8 +192,12 @@ const handleLogout = async () => {
 }
 
 // 初始化
+
 const init = async () => {
-  await userStore.fetchLoginUser()
+  const res = await getLoginUserUsingGet()
+  if (res.code === 40100) {
+    loginUser.value = {}
+  }
 }
 onMounted(() => {
   init()
@@ -197,6 +205,10 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+/deep/ .ant-row {
+  display: flex;
+  justify-content: space-between;
+}
 .global-header {
   background-color: unset;
   padding: 0;
@@ -229,7 +241,7 @@ onMounted(() => {
   background: url('@/assets/logo.png') no-repeat center center;
   background-size: contain;
   width: 58px;
-  height: 58px; 
+  height: 58px;
   margin: 0 auto;
 }
 </style>

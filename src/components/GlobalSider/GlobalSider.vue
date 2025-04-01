@@ -64,7 +64,7 @@ const items = computed(() => {
 })
 
 /**
- * 菜单点击事件 
+ * 菜单点击事件
  * @param param0
  */
 const doMenuClick = ({ key }: { key: string }) => {
@@ -115,7 +115,7 @@ const fetchTeamSpaceList = async () => {
 }
 
 watchEffect(() => {
-  if (loginUser.value) {
+  if (loginUser.value && loginUser.value.id) {
     fetchTeamSpaceList()
   }
 })

@@ -42,7 +42,7 @@ export const PIC_BATCH_ENUM = {
  * 图片来源文案
  */
 export const PIC_BATCH_MAP = {
-  "baidu": '百度',
+  // "baidu": '百度',
   "bing": "必应"
 }
 

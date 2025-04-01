@@ -31,31 +31,28 @@
     <WaterfallFlow
       :data="displayData"
       :loading="loading"
-      :show-op="true"
+      :show-op="false"
       :can-edit="true"
       :can-delete="true"
     />
- 
+
     <div ref="loadMoreTrigger" class="load-more-trigger" :class="{ loading: loading }">
-      <transition name="fade">
-   
-        <div v-if="loading" class="loading-container">
-          <a-spin />
-        </div>
-      </transition>
-      <transition name="fade">
-        <div v-if="!hasMore && dataList.length > 0" class="no-more">没有更多数据了</div>
-      </transition>
+      <!-- <a-spin /> -->
+      <!-- <transition name="fade"> -->
+      <div v-if="loading" class="loading-container">
+        <a-spin />
+      </div>
+      <!-- </transition> -->
+      <!-- <transition name="fade"> -->
+      <div v-if="!hasMore && dataList.length > 0" class="no-more">没有更多数据了</div>
+      <!-- </transition> -->
     </div>
   </div>
 </template>
 
 <script lang="ts" setup name="HomePage">
-import { computed, nextTick, onMounted, ref, onUnmounted } from 'vue'
-import {
-  listPictureVoByPageUsingPost,
-  listPictureVoByPageWithCacheManagerUsingPost,
-} from '@/api/pictureController'
+import { computed, onMounted, ref, onUnmounted } from 'vue'
+import { listPictureVoByPageWithCacheManagerUsingPost } from '@/api/pictureController'
 import { message } from 'ant-design-vue'
 import { pictureTagCategoryUsingGet } from '@/api/pictureController'
 import { useIntersectionObserver } from '@vueuse/core'
@@ -317,7 +314,7 @@ onUnmounted(() => {
 .loading-container {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  // padding: 20px 0;
 }
 
 .load-more-trigger {
@@ -335,7 +332,7 @@ onUnmounted(() => {
 .no-more {
   text-align: center;
   color: #999;
-  padding: 20px 0;
+  height: 120px;
 }
 
 .fade-enter-active,
